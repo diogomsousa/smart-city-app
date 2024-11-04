@@ -1,0 +1,182 @@
+[
+    {
+        "id": 1,
+        "name": "Downtown Charging Station",
+        "region":"North",
+        "location": {
+            "address": "123 Main St, Cityville",
+            "latitude": 40.712776,
+            "longitude": -74.005974
+        },
+        "availability": {
+            "total_slots": 10,
+            "available_slots": 3
+        },
+        "charging_rates": {
+            "price_per_kwh": 0.25,
+            "currency": "USD"
+        },
+        "status": "online",
+        "features": [
+            "fast_charging",
+            "covered_parking",
+            "restrooms"
+        ],
+        "contracts": [
+            {
+                "contract_id": "C001",
+                "company_name": "ChargeCo",
+                "contract_start": "2023-01-01",
+                "contract_end": "2025-01-01",
+                "terms": "Standard rate for all users"
+            },
+            {
+                "contract_id": "C002",
+                "company_name": "EcoCharge",
+                "contract_start": "2023-06-01",
+                "contract_end": "2024-06-01",
+                "terms": "Discounted rates for EcoCharge members"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Uptown Charging Hub",
+        "region":"South",
+        "location": {
+            "address": "456 Uptown Ave, Cityville",
+            "latitude": 40.73061,
+            "longitude": -73.935242
+        },
+        "availability": {
+            "total_slots": 8,
+            "available_slots": 1
+        },
+        "charging_rates": {
+            "price_per_kwh": 0.30,
+            "currency": "USD"
+        },
+        "status": "online",
+        "features": [
+            "fast_charging",
+            "wifi",
+            "cafe"
+        ],
+        "contracts": [
+            {
+                "contract_id": "C003",
+                "company_name": "PowerCharge",
+                "contract_start": "2022-05-01",
+                "contract_end": "2024-05-01",
+                "terms": "Priority access for PowerCharge members"
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "name": "Suburban Charging Point",
+        "region":"West",
+        "location": {
+            "address": "789 Suburb Rd, Townsville",
+            "latitude": 40.678178,
+            "longitude": -73.944158
+        },
+        "availability": {
+            "total_slots": 5,
+            "available_slots": 0
+        },
+        "charging_rates": {
+            "price_per_kwh": 0.20,
+            "currency": "USD"
+        },
+        "status": "offline",
+        "features": [
+            "fast_charging",
+            "shopping",
+            "dining"
+        ],
+        "contracts": [
+            {
+                "contract_id": "C004",
+                "company_name": "GreenCharge",
+                "contract_start": "2023-03-01",
+                "contract_end": "2025-03-01",
+                "terms": "Exclusive rates for GreenCharge partners"
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "name": "Airport Charging Station",
+        "region":"East",
+        "location": {
+            "address": "101 Airport Blvd, Flytown",
+            "latitude": 40.641311,
+            "longitude": -73.778139
+        },
+        "availability": {
+            "total_slots": 12,
+            "available_slots": 6
+        },
+        "charging_rates": {
+            "price_per_kwh": 0.35,
+            "currency": "USD"
+        },
+        "status": "online",
+        "features": [
+            "fast_charging",
+            "valet_service",
+            "24/7_access"
+        ],
+        "contracts": [
+            {
+                "contract_id": "C005",
+                "company_name": "FlyCharge",
+                "contract_start": "2023-09-01",
+                "contract_end": "2026-09-01",
+                "terms": "Special rates for airport employees"
+            },
+            {
+                "contract_id": "C006",
+                "company_name": "TravelCharge",
+                "contract_start": "2022-12-01",
+                "contract_end": "2024-12-01",
+                "terms": "Discounts for frequent travelers"
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "name": "Mall Charging Plaza",
+        "region":"South",
+        "location": {
+            "address": "202 Mall St, Shopville",
+            "latitude": 40.748817,
+            "longitude": -73.985428
+        },
+        "availability": {
+            "total_slots": 15,
+            "available_slots": 4
+        },
+        "charging_rates": {
+            "price_per_kwh": 0.28,
+            "currency": "USD"
+        },
+        "status": "online",
+        "features": [
+            "fast_charging",
+            "shopping",
+            "dining",
+            "entertainment"
+        ],
+        "contracts": [
+            {
+                "contract_id": "C007",
+                "company_name": "ShopCharge",
+                "contract_start": "2021-11-01",
+                "contract_end": "2023-11-01",
+                "terms": "Promotional rates for mall"
+            }
+        ]
+    }
+]

@@ -8,20 +8,24 @@ body {
 .App {
   display: flex;
   padding: 20px;
-  height: 100vh; /* Preenche toda a altura da tela */
+  height: 100vh;
+  /* Preenche toda a altura da tela */
 }
 
 .sidebar {
   width: 250px;
   background-color: #ffffff;
   padding: 20px;
-  padding-bottom: 20px; /* Define o espaçamento inferior da sidebar */
+  padding-bottom: 20px;
+  /* Define o espaçamento inferior da sidebar */
   border-radius: 8px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Alinha os itens à esquerda */
-  height: auto; /* Ajusta a altura automaticamente */
+  align-items: flex-start;
+  /* Alinha os itens à esquerda */
+  height: auto;
+  /* Ajusta a altura automaticamente */
 }
 
 .checkbox-container {
@@ -41,13 +45,16 @@ body {
 
 .filter-card h2 {
   margin-bottom: 10px;
-  font-size: 14px; /* Tamanho menor para o título do filtro */
+  font-size: 14px;
+  /* Tamanho menor para o título do filtro */
 }
 
 .filter-card label {
   display: block;
-  margin-bottom: 8px; /* Espaçamento menor entre os labels */
-  font-size: 12px; /* Tamanho menor para o texto dos labels */
+  margin-bottom: 8px;
+  /* Espaçamento menor entre os labels */
+  font-size: 12px;
+  /* Tamanho menor para o texto dos labels */
 }
 
 .carbon-filter {
@@ -106,7 +113,8 @@ body {
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-top: auto; /* Coloca o espaço restante acima dos botões */
+  margin-top: auto;
+  /* Coloca o espaço restante acima dos botões */
 }
 
 .action-button {
@@ -121,7 +129,8 @@ body {
 }
 
 .action-button:last-child {
-  margin-bottom: 0; /* Remove margem inferior do último botão */
+  margin-bottom: 0;
+  /* Remove margem inferior do último botão */
 }
 
 .action-button:hover {
@@ -129,21 +138,52 @@ body {
 }
 
 .graph-container {
-  flex: 1; /* Ocupa todo o espaço restante */
+  flex: 1;
+  /* Ocupa todo o espaço restante */
   display: flex;
-  justify-content: center; /* Centraliza o conteúdo horizontalmente */
-  align-items: center; /* Centraliza o conteúdo verticalmente */
-  overflow: hidden; /* Evita que o gráfico vaze para fora do container */
+  justify-content: center;
+  /* Centraliza o conteúdo horizontalmente */
+  align-items: center;
+  /* Centraliza o conteúdo verticalmente */
+  overflow: hidden;
+  /* Evita que o gráfico vaze para fora do container */
 }
 
 .node {
-  fill: #1f78b4; /* Cor de preenchimento padrão dos nós */
-  stroke: #fff; /* Cor do contorno dos nós */
-  stroke-width: 2px; /* Largura do contorno dos nós */
+  fill: #1f78b4;
+  /* Cor de preenchimento padrão dos nós */
+  stroke: #fff;
+  /* Cor do contorno dos nós */
+  stroke-width: 2px;
+  /* Largura do contorno dos nós */
 }
 
 .node.highlighted {
-  stroke: #000; /* Cor do contorno dos nós quando destacados */
-  stroke-width: 3px; /* Largura do contorno dos nós quando destacados */
-  stroke-dasharray: 4; /* Estilo da linha tracejada para nós destacados */
+  stroke: #000;
+  /* Cor do contorno dos nós quando destacados */
+  stroke-width: 3px;
+  /* Largura do contorno dos nós quando destacados */
+  stroke-dasharray: 4;
+  /* Estilo da linha tracejada para nós destacados */
+}
+
+
+.button-sidebar {
+  gap: 1px;
+  padding: 2px;
+}
+
+
+.button-sidebar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+
+.back-default-button {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 20px;
 }
