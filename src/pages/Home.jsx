@@ -11,7 +11,7 @@ const Home = () => {
     const [selectedRegions, setSelectedRegions] = useState(new Set());
     const [selectedEnergyTypes, setSelectedEnergyTypes] = useState(new Set());
     const [carbonFootprintValue, setCarbonFootprintValue] = useState(0);
-    const [selectedNode, setSelectedNode] = useState(null); // State to track selected node
+    const [selectedNode, setSelectedNode] = useState(null);
     const navigate = useNavigate();
 
     const handleRegionChange = (event) => {
@@ -65,7 +65,7 @@ const Home = () => {
                                 value="North"
                                 onChange={handleRegionChange}
                             />
-                            Norte
+                            North
                         </label>
                         <label>
                             <input
@@ -73,7 +73,7 @@ const Home = () => {
                                 value="South"
                                 onChange={handleRegionChange}
                             />
-                            Sul
+                            South
                         </label>
                         <label>
                             <input
@@ -81,7 +81,7 @@ const Home = () => {
                                 value="East"
                                 onChange={handleRegionChange}
                             />
-                            Este
+                            East
                         </label>
                         <label>
                             <input
@@ -89,7 +89,7 @@ const Home = () => {
                                 value="Oeste"
                                 onChange={handleRegionChange}
                             />
-                            Oeste
+                            West
                         </label>
                     </div>
                     <div className="filter-card">
@@ -133,9 +133,6 @@ const Home = () => {
                             <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l button-sidebar"
                                 onClick={handleAddStationClick}>
                                 Add Station
-                            </button>
-                            <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l button-sidebar">
-                                Delete Station
                             </button>
                             <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l"
                                 onClick={handleListStationsClick}>

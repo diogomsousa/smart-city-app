@@ -187,3 +187,10 @@ body {
   gap: 5px;
   margin: 20px;
 }
+
+
+.region-sidebar-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
