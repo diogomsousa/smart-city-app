@@ -3,7 +3,7 @@ import ForceGraph from "../components/ForceGraph";
 import ContractsGraph from "../components/ContractsForceGraph"; // Import ContractsGraph component
 import "../App.css"; // Import your CSS
 import { useNavigate } from 'react-router-dom';
-import AddStation from "./AddStation"; // Import AddStation page
+import AddEntity from "./AddEntity"; // Import AddEntity page
 import ListStations from "./ListStations"; // Import ListStations page
 import { Route, Routes } from 'react-router-dom';
 
@@ -45,8 +45,8 @@ const Home = () => {
     };
 
     // Routes
-    const handleAddStationClick = () => {
-        navigate('/add-station');
+    const handleAddEntityClick = () => {
+        navigate('/add-entity');
     };
 
     const handleListStationsClick = () => {
@@ -131,12 +131,12 @@ const Home = () => {
                     <div className="filter-card">
                         <div className="button-sidebar-container">
                             <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l button-sidebar"
-                                onClick={handleAddStationClick}>
-                                Add Station
+                                onClick={handleAddEntityClick}>
+                                Add Entity
                             </button>
                             <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l"
                                 onClick={handleListStationsClick}>
-                                View Stations
+                                View Entities
                             </button>
                         </div>
                     </div>
@@ -163,7 +163,7 @@ const Home = () => {
                 )}
             </div>
             <Routes>
-                <Route path="/add-station" element={<AddStation />} />
+                <Route path="/add-entity" element={<AddEntity />} />
                 <Route path="/list-stations" element={<ListStations />} />
             </Routes>
         </div>

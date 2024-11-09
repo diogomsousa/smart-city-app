@@ -194,3 +194,15 @@ body {
   flex-direction: column;
   gap: 1px;
 }
+
+
+
+/* Full-width (spans both columns) for certain elements */
+.col-span-2 {
+  grid-column: span 2;
+}
+
+/* Optional styling for each form item */
+.mb-4 {
+  margin-bottom: 16px;
+}
