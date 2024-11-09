@@ -1,60 +1,18 @@
-/* Make form-container larger and centered */
-.form-container {
+.filters-section {
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 90vh;
-    /* 90% of the viewport height */
-    width: 95%;
-    /* 95% of the viewport width */
-    max-width: 1200px;
-    /* Limit max width for larger screens */
-    max-height: 800px;
-    /* Optional: Limit max height */
-    margin: 0 auto;
-    /* Center in viewport */
-    padding: 20px;
-    /* Padding for breathing room */
-    box-sizing: border-box;
-    /* Include padding in total size */
-}
-
-/* Larger width for inner form card */
-.form-container .w-full.max-w-xs {
     width: 100%;
-    max-width: 1000px;
-    /* Set a larger max width */
+    margin-bottom: 40px;
+    /* Reduce space below the filter section */
 }
 
-/* Set the form to display in two columns */
-.form-container .w-full.max-w-xs form {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    /* Two equal-width columns */
-    gap: 16px;
-    /* Spacing between items */
-}
-
-/* Full-width (spans both columns) for certain elements */
-.col-span-2 {
-    grid-column: span 2;
-}
-
-/* Optional styling for each form item */
-.mb-4 {
-    margin-bottom: 16px;
-}
-
-
-.button-add-form {
+.form-section {
     display: flex;
     justify-content: center;
-    align-items: center;
-}
-
-.add-entity-filters-container {
-    display: flex;
-    justify-content: center;
+    align-items: flex-start;
+    /* Align form to the top instead of centering vertically */
+    width: 100%;
+    /* Remove space above form */
 }
 
 .add-entity-filters {
@@ -62,33 +20,86 @@
     flex-direction: column;
     align-items: center;
     width: 80%;
-    max-width: 600px;
+    max-width: 400px;
+    padding: 10px;
     margin: 0 auto;
+    box-sizing: border-box;
+    text-align: center;
 }
 
 .add-entity-filters .flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     gap: 15px;
+    width: 100%;
 }
 
-.custom-select {
-    background-position: calc(100% - 1rem) center;
-    background-repeat: no-repeat;
-}
-
-.thermal-system-container {
+.add-entity-filters .flex div {
     display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.add-entity-filters input[type="radio"] {
+    margin: 0;
+    padding: 0;
+}
+
+.add-entity-filters label {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 12px;
+    width: 100%;
+    height: auto;
+    max-width: none;
+    box-sizing: border-box;
 }
 
-.battery-capacity-container {
+.form-container .w-full.max-w-xs {
+    width: 100%;
+    max-width: 1000px;
+}
+
+.form-container .w-full.max-w-xs form {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 12px;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
 }
 
-.thermal-system-text {
-    margin-right: 10px;
+.button-add-form {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.vehicle-form-container {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.charging-form-container {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.button-container {
+    flex-shrink: 0;
+}
+
+button.button-add-form {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 1.2rem;
+    text-align: center;
+    margin-top: 10px;
 }

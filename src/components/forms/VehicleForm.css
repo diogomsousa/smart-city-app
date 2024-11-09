@@ -1,0 +1,34 @@
+.custom-select {
+    background-position: calc(100% - 1rem) center;
+    background-repeat: no-repeat;
+}
+
+.thermal-system-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+}
+
+.battery-capacity-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+}
+
+.thermal-system-text {
+    margin-right: 10px;
+}
+
+
+
+/* Full-width (spans both columns) for certain elements */
+.col-span-2 {
+    grid-column: span 2;
+}
+
+/* Optional styling for each form item */
+.mb-4 {
+    margin-bottom: 16px;
+}
