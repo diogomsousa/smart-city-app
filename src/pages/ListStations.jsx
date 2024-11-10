@@ -45,9 +45,14 @@ export default function ListStations() {
                     <thead>
                         <tr>
                             <th className="px-4 py-2">#</th>
-                            <th className="px-4 py-2">Brand</th>
-                            <th className="px-4 py-2">TimeZone</th>
+                            <th className="px-4 py-2">Location Type</th>
+                            <th className="px-4 py-2">Zip Code</th>
                             <th className="px-4 py-2">City</th>
+                            <th className="px-4 py-2">Charging Standard</th>
+                            <th className="px-4 py-2">Voltage Supported</th>
+                            <th className="px-4 py-2">Energy delivered</th>
+                            <th className="px-4 py-2">Connector Types</th>
+                            <th className="px-4 py-2">Payment Model</th>
                             <th className="px-4 py-2">X</th>
                         </tr>
                     </thead>
@@ -56,9 +61,14 @@ export default function ListStations() {
                             stations.map((station, index) => (
                                 <tr key={index}>
                                     <td className="border px-4 py-2">{index + 1}</td>
-                                    <td className="border px-4 py-2">{station.brand}</td>
-                                    <td className="border px-4 py-2">{station.timeZone}</td>
+                                    <td className="border px-4 py-2">{station.locationType}</td>
+                                    <td className="border px-4 py-2">{station.zipCode}</td>
                                     <td className="border px-4 py-2">{station.city}</td>
+                                    <td className="border px-4 py-2">{station.chargingStandard}</td>
+                                    <td className="border px-4 py-2">{station.voltageSupported}</td>
+                                    <td className="border px-4 py-2">{station.energyDelivered}</td>
+                                    <td className="border px-4 py-2">{station.connectorTypes}</td>
+                                    <td className="border px-4 py-2">{station.paymentModel}</td>
                                     <td className="border px-4 py-2">
                                         <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l back-default-button"
                                             onClick={() => deleteStation(station.id)}>

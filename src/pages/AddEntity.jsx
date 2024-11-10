@@ -7,21 +7,64 @@ import ChargingStationForm from '../components/forms/ChargingStationForm';
 
 export default function AddEntity() {
 
+    const navigate = useNavigate();
+    const handleBackToHome = () => {
+        navigate('/'); // Navigate to the home page
+    };
+
     const [filter, setFilter] = useState(true); // `true` for vehicle, `false` for charging station
     const toggleFilter = () => setFilter(false); // Set it to `false` for ChargingStation
 
+    const [chargingStation, setChargingStation] = useState({
+        locationType: "",
+        zipCode: "",
+        city: "",
+        chargingStandard: "",
+        voltageSupported: 85,
+        energyDelivered: 120,
+        connectorType: "",
+        paymentModel: ""
+    });
+
+    const updateChargingStation = (updatedChargingStation) => {
+        setChargingStation(updatedChargingStation);
+    };
 
 
-    // const onSubmit = async (e) => {
-    //     e.preventDefault();
-    //     await axios.post(`http://localhost:8888/${entity}`, station);
-    //     navigate('/');
-    // }
+    const [vehicle, setVehicle] = useState({
+        brand: "",
+        model: "",
+        portLocation: "",
+        batteryCapacity: 20,
+        thermalSystem: "",
+        connectorType: "",
+        chargingBehavior: "",
+        plugCharge: false
+    });
 
-    const navigate = useNavigate();
+    const updateVehicle = (updatedVehicle) => {
+        setVehicle(updatedVehicle);
+    };
 
-    const handleBackToHome = () => {
-        navigate('/'); // Navigate to the home page
+
+
+    const onSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            if (!filter) {
+                // Posting Charging Station data
+                await axios.post("http://localhost:8888/charging_station", chargingStation);
+                handleBackToHome();
+            } else {
+                // Posting Vehicle data
+                console.log("Vehicle form submitted");
+                await axios.post("http://localhost:8888/vehicle", vehicle);
+                handleBackToHome();
+            }
+        } catch (error) {
+            console.error("Error posting data: ", error);
+            alert("There was an error submitting the form. Please try again.");
+        }
     };
 
 
@@ -73,14 +116,14 @@ export default function AddEntity() {
             <div className="form-section">
                 <div className="form-container">
                     <div className="w-full max-w-xs">
-                        <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col h-full">
+                        <form onSubmit={(e) => onSubmit(e)} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col h-full">
                             {filter ? (
                                 <div className="vehicle-form-container flex-1">
-                                    <VehicleForm />
+                                    <VehicleForm vehicle={vehicle} updateVehicle={updateVehicle} />
                                 </div>
                             ) : (
                                 <div className='charging-form-container flex-1'>
-                                    <ChargingStationForm />
+                                    <ChargingStationForm chargingStation={chargingStation} updateChargingStation={updateChargingStation} />
                                 </div>
                             )}
 

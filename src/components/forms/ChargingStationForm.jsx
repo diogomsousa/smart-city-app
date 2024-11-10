@@ -1,122 +1,239 @@
 import React, { useState } from 'react'
 
-export default function ChargingStationForm() {
+export default function ChargingStationForm({ chargingStation, updateChargingStation }) {
 
-  const [powerCapacity, setPowerCapacity] = useState(85);
+  // const [energyDelivered, setenergyDelivered] = useState(85);
 
-  const updatePowerCapacity = (e) => {
-    setPowerCapacity(e.target.value);
-  }
+  // const updateEnergyDelivered = (e) => {
+  //   const newenergyDelivered = e.target.value;
+  //   setenergyDelivered(newenergyDelivered); // Update local energyDelivered state
+  //   updateChargingStation({
+  //     ...chargingStation,
+  //     energyDelivered: newenergyDelivered // Update chargingStation with the new value
+  //   });
+  // };
 
-  const [voltageCapacity, setVoltageCapacity] = useState(250);
+  const { locationType, zipCode, city, chargingStandard, voltageSupported, connectorType, paymentModel } = chargingStation;
 
-  const updateVoltageCapacity = (e) => {
-    setPowerCapacity(e.target.value);
-  }
+  const handleChangeStation = (e) => {
+    const { name, value } = e.target;
+    setChargingStation((prevState) => ({
+      ...prevState,
+      [name]: value // This ensures that the specific field is updated
+    }));
+  };
+
+
   return (
     <div>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="timeZone">
-          Charging Behavior
-        </label>
-        <select
-          class="shadow border border-gray-300 rounded w-full py-2 px-3 pr-10 text-gray-700 leading-tight focus:outline-none focus:shadow-outline transition duration-75 focus:border-blue-600"
-          name="chargingBehavior">
-          <option value="shortUse">Frequent short trips</option>
-          <option value="longUse">Long-distance travel</option>
-          <option value="ocassionalUse">Ocassional use</option>
-        </select>
-      </div>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="timeZone">
-          Zip Code
-        </label>
-        <input
-          class="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md"
-          placeholder="ZIP code (45624)"
-          pattern="^\d{5}$"
-          maxlength="5"
-        />
-      </div>
       <div className="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="city">
-          City
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="locationType">
+          Location Type
         </label>
         <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           type="text"
-          placeholder="City"
-          name='city' />
+          placeholder="Location Type"
+          name='locationType' />
       </div>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="timeZone">
-          Charging Standard
-        </label>
-        <select
-          class="shadow border border-gray-300 rounded w-full py-2 px-3 pr-10 text-gray-700 leading-tight focus:outline-none focus:shadow-outline transition duration-75 focus:border-blue-600"
-          name="chargingBehavior">
-          <option value="fastCharging">Fast Charging</option>
-          <option value="fastCharging">Slow Charging</option>
-        </select>
-      </div>
-
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="timeZone">
-          Voltage Supported
-        </label>
-        <input
-          type="range"
-          id="voltageCapacity-range"
-          class="w-full accent-indigo-600 capacity-container"
-          min="100"
-          max="400"
-          value={voltageCapacity}
-          onChange={updateVoltageCapacity} />
-        <div class="flex justify-between text-gray-500">
-          <span id="minBatCapacity">{voltageCapacity}V</span>
-          <span id="maxBatCapacity">400V</span>
+      <div>
+        <div className="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="zipCode">
+            Zip Code
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="text"
+            placeholder="Zip Code (ex: 4654-323)"
+            name='zipCode'
+          />
         </div>
       </div>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="timeZone">
-          Energy delivered
-        </label>
-        <input
-          type="range"
-          id="powerCapacity-range"
-          class="w-full accent-indigo-600 capacity-container"
-          min="20"
-          max="350"
-          value={powerCapacity}
-          onChange={updatePowerCapacity} />
-        <div class="flex justify-between text-gray-500">
-          <span id="minBatCapacity">{powerCapacity}kwh</span>
-          <span id="maxBatCapacity">350kwh</span>
+      <div>
+        <div className="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="city">
+            City
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="text"
+            placeholder="City"
+            name='city'
+          />
         </div>
       </div>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="timeZone">
-          Connector Types
-        </label>
-        <select
-          class="shadow border border-gray-300 rounded w-full py-2 px-3 pr-10 text-gray-700 leading-tight focus:outline-none focus:shadow-outline transition duration-75 focus:border-blue-600"
-          name="chargingBehavior">
-          <option value="teslaSupercharger">Tesla Supercharger</option>
-          <option value="ccs">CCS</option>
-          <option value="chademo">CHAdeMo</option>
-        </select>
+      <div>
+        <div className="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="chargingStandard">
+            Charging Standard
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="text"
+            placeholder="Charging Standard"
+            name='chargingStandard'
+          />
+        </div>
       </div>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="timeZone">
-          Payment Model
-        </label>
-        <select
-          class="shadow border border-gray-300 rounded w-full py-2 px-3 pr-10 text-gray-700 leading-tight focus:outline-none focus:shadow-outline transition duration-75 focus:border-blue-600"
-          name="chargingBehavior">
-          <option value="teslaSupercharger">Subscription Based</option>
-          <option value="ccs">Free</option>
-          <option value="chademo">Pay-per-use</option>
-        </select>
+      <div>
+        <div className="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="voltageSupported">
+            Voltage Supported
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="text"
+            placeholder="Voltage "
+            name='voltageSupported'
+          />
+        </div>
+      </div>
+      <div>
+        <div className="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="connectorType">
+            Connector Type
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="text"
+            placeholder="Connector Type"
+            name='connectorType'
+          />
+        </div>
+      </div>
+      <div>
+        <div className="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="paymentModel">
+            Payment Model
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="text"
+            placeholder="Payment Model"
+            name='paymentModel'
+          />
+        </div>
       </div>
     </div>
+
+
+
+    // <div>
+
+    //   <div class="mb-4">
+    //     <label class="block text-gray-700 text-sm font-bold mb-2" for="locationType">
+    //       Location Type
+    //     </label>
+    //     <select
+    //       class="shadow border border-gray-300 rounded w-full py-2 px-3 pr-10 text-gray-700 leading-tight focus:outline-none focus:shadow-outline transition duration-75 focus:border-blue-600"
+    //       name="locationType"
+    //       value={locationType}
+    //       onChange={handleChangeStation}>
+    //       <option value="supermarket">Supermarket</option>
+    //       <option value="shoppingMall">Shopping Mall</option>
+    //       <option value="restaurant">Restaurant</option>
+    //       <option value="highway">Highway Stop</option>
+    //       <option value="hotel">Hotel</option>
+    //       <option value="airport">Airport</option>
+    //       <option value="university">University</option>
+    //       <option value="gasStation">Gas Station</option>
+    //       <option value="parking">Parking Lot</option>
+    //     </select>
+    //   </div>
+
+    //   <div className="mb-4">
+    //     <label class="block text-gray-700 text-sm font-bold mb-2" for="zipCode">
+    //       Zip Code
+    //     </label>
+    //     <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+    //       type="text"
+    //       placeholder="Zip Code"
+    //       name='zipCode'
+    //       onChange={handleChangeStation}
+    //       value={zipCode} />
+    //   </div>
+
+    //   <div className="mb-4">
+    //     <label class="block text-gray-700 text-sm font-bold mb-2" for="city">
+    //       City
+    //     </label>
+    //     <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+    //       type="text"
+    //       placeholder="City"
+    //       name='city'
+    //       onChange={handleChangeStation}
+    //       value={city} />
+    //   </div>
+
+    //   <div class="mb-4">
+    //     <label class="block text-gray-700 text-sm font-bold mb-2" for="chargingStandard">
+    //       Charging Standard
+    //     </label>
+    //     <select
+    //       class="shadow border border-gray-300 rounded w-full py-2 px-3 pr-10 text-gray-700 leading-tight focus:outline-none focus:shadow-outline transition duration-75 focus:border-blue-600"
+    //       name="chargingStandard"
+    //       value={chargingStandard}
+    //       onChange={handleChangeStation}>
+    //       <option value="fastCharging">Fast Charging</option>
+    //       <option value="slowCharging">Slow Charging</option>
+    //     </select>
+    //   </div>
+
+    //   <div className="mb-4">
+    //     <label class="block text-gray-700 text-sm font-bold mb-2" for="voltageSupported">
+    //       Voltage Supported
+    //     </label>
+    //     <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+    //       type="text"
+    //       placeholder="Voltage"
+    //       name='voltageSupported'
+    //       value={voltageSupported}
+    //       onChange={handleChangeStation} />
+    //   </div>
+
+    //   <div class="mb-4">
+    //     <label class="block text-gray-700 text-sm font-bold mb-2" for="energyDelivered">
+    //       Energy delivered
+    //     </label>
+    //     <input
+    //       type="range"
+    //       id="energyDelivered-range"
+    //       class="w-full accent-indigo-600 capacity-container"
+    //       min="20"
+    //       max="350"
+    //       value={energyDelivered}
+    //       onChange={updateEnergyDelivered} />
+    //     <div class="flex justify-between text-gray-500">
+    //       <span id="minBatCapacity">{energyDelivered}kwh</span>
+    //       <span id="maxBatCapacity">350kwh</span>
+    //     </div>
+    //   </div>
+
+    //   <div className="mb-4">
+    //     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="connectorType">
+    //       Connector Types
+    //     </label>
+    //     <select
+    //       className="shadow border border-gray-300 rounded w-full py-2 px-3 pr-10 text-gray-700 leading-tight focus:outline-none focus:shadow-outline transition duration-75 focus:border-blue-600"
+    //       name="connectorType"
+    //       value={chargingStation.connectorType} // Binding the selected value
+    //       onChange={handleChangeStation}
+    //     >
+    //       {ConnectorTypeOptions.map((type) => (
+    //         <option key={type} value={type}>
+    //           {type} {/* Displaying the enum-like value */}
+    //         </option>
+    //       ))}
+    //     </select>
+    //   </div>
+
+    //   <div class="mb-4">
+    //     <label class="block text-gray-700 text-sm font-bold mb-2" for="paymentModel">
+    //       Payment Model
+    //     </label>
+    //     <select
+    //       class="shadow border border-gray-300 rounded w-full py-2 px-3 pr-10 text-gray-700 leading-tight focus:outline-none focus:shadow-outline transition duration-75 focus:border-blue-600"
+    //       name="paymentModel"
+    //       value={paymentModel}
+    //       onChange={handleChangeStation}>
+    //       <option value="subscriptionBased">Subscription Based</option>
+    //       <option value="free">Free</option>
+    //       <option value="payPerUse">Pay-per-use</option>
+    //     </select>
+    //   </div>
+    // </div>
   )
 }
