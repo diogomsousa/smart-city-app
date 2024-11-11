@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 export default function ChargingStationForm({ chargingStation, updateChargingStation }) {
 
-  const { locationType, zipCode, city, chargingStandard, voltageSupported, connectorType, paymentModel } = chargingStation;
+  const { locationType, zipCode, city, chargingStandard, voltageSupported, energyDelivered, connectorType, paymentModel } = chargingStation;
 
   const handleChangeChargingStation = (e) => {
     const { name, value } = e.target;
@@ -60,7 +60,7 @@ export default function ChargingStationForm({ chargingStation, updateChargingSta
       </div>
       <div className="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="voltageSupported">
-          Voltage Supported
+          Voltage Supported V
         </label>
         <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           type="text"
@@ -68,6 +68,17 @@ export default function ChargingStationForm({ chargingStation, updateChargingSta
           name='voltageSupported'
           onChange={handleChangeChargingStation}
           value={voltageSupported} />
+      </div>
+      <div className="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="energyDelivered">
+          Energy Delivered kwh
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          type="text"
+          placeholder="Energy Delivered"
+          name='energyDelivered'
+          onChange={handleChangeChargingStation}
+          value={energyDelivered} />
       </div>
       <div className="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="connectorType">

@@ -1,14 +1,31 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
-import dataNodes from './data.json';
+import axios from 'axios';
 
-const ForceGraph = ({ selectedRegions, selectedEnergyTypes, zoomLevel, onNodeClick }) => {
+const ForceGraph = ({ zoomLevel, onNodeClick }) => {
   const svgRef = useRef();
   const tooltipRef = useRef(null);
+  const [stations, setStations] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
   const [dimensions, setDimensions] = useState({
     width: window.innerWidth * 0.8, // 80% of the window width
     height: window.innerHeight * 0.8 // 80% of the window height
   });
+
+  // Fetch Stations and Vehicles
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const stationResult = await axios.get("http://localhost:8888/stations");
+        const vehicleResult = await axios.get("http://localhost:8888/vehicles");
+        setStations(stationResult.data);
+        setVehicles(vehicleResult.data);
+      } catch (error) {
+        console.error("Error loading data", error);
+      }
+    };
+    loadData();
+  }, []);
 
   // Update dimensions on window resize
   useEffect(() => {
@@ -24,80 +41,77 @@ const ForceGraph = ({ selectedRegions, selectedEnergyTypes, zoomLevel, onNodeCli
   }, []);
 
   useEffect(() => {
-    console.log('Initial graph rendering or filters changed');
-
     const { width, height } = dimensions;
     const color = d3.scaleOrdinal(d3.schemeCategory10);
-    const radius = 10;
 
     const svg = d3.select(svgRef.current)
       .attr('width', width)
       .attr('height', height);
 
-    const nodes = dataNodes.map(d => ({ ...d }));
+    // Combine stations and vehicles into a single nodes array
+    const nodes = [
+      ...stations.map(station => ({
+        ...station,
+        id: `station_${station.id}`,  // Prefix station IDs
+        type: 'station', // Indicate it's a station node
+        color: 'red', // Color for stations
+        label: station.zipCode
+      })),
+      ...vehicles.map(vehicle => ({
+        ...vehicle,
+        id: `vehicle_${vehicle.id}`,  // Prefix vehicle IDs
+        type: 'vehicle', // Indicate it's a vehicle node
+        color: 'blue', // Color for vehicles
+        label: vehicle.brand
+      })),
+    ];
 
-    let nodesCopy = nodes.slice();
-
-    if (selectedRegions.size > 0) {
-      nodesCopy = nodesCopy.filter(node => selectedRegions.has(node.region));
-    }
-    if (selectedEnergyTypes.size > 0) {
-      nodesCopy = nodesCopy.filter(node => selectedEnergyTypes.has(node.energyType));
-    }
-
-    const nodesByRegion = d3.group(nodesCopy, d => d.region);
-
+    // Create links based on connector type matching
     const links = [];
-    nodesByRegion.forEach(regionNodes => {
-      for (let i = 0; i < regionNodes.length; i++) {
-        for (let j = i + 1; j < regionNodes.length; j++) {
-          links.push({ source: regionNodes[i].id, target: regionNodes[j].id });
-        }
-      }
-    });
 
-    nodesCopy.forEach(sourceNode => {
-      nodesCopy.forEach(targetNode => {
-        if (sourceNode.id !== targetNode.id && sourceNode.sustainability.carbonFootprint === 'Low' && targetNode.sustainability.carbonFootprint === 'Low') {
-          links.push({ source: sourceNode.id, target: targetNode.id });
+    vehicles.forEach(vehicle => {
+      stations.forEach(station => {
+        // Debugging to log connectorType comparison
+        console.log(`Comparing Vehicle ${vehicle.id} connectorType: ${vehicle.connectorType} with Station ${station.id} connectorType: ${station.connectorType}`);
+
+        if (vehicle.connectorType.toLowerCase() === station.connectorType.toLowerCase()) {
+          console.log(`Linking Vehicle ${vehicle.id} with Station ${station.id}`); // Log if a link is created
+          links.push({
+            source: `vehicle_${vehicle.id}`,  // Vehicle as the source
+            target: `station_${station.id}`   // Station as the target
+          });
         }
       });
     });
 
-    const linksCopy = links.map(d => ({ ...d }));
+    // If links are empty, log a message
+    if (links.length === 0) {
+      console.log("No links created. Check connectorType values.");
+    }
 
-    linksCopy.forEach(link => {
-      link.source = nodesCopy.find(node => node.id === link.source);
-      link.target = nodesCopy.find(node => node.id === link.target);
-    });
-
-    const simulation = d3.forceSimulation(nodesCopy)
-      .force('link', d3.forceLink(linksCopy).id(d => d.id).distance(50))
-      .force('charge', d3.forceManyBody().strength(-250))
+    const simulation = d3.forceSimulation(nodes)
+      .force('link', d3.forceLink(links).id(d => d.id).distance(100))
+      .force('charge', d3.forceManyBody().strength(-200))
       .force('center', d3.forceCenter(width / 2, height / 2));
 
+    // Ensure that links are rendered with a visible style
     const link = svg.selectAll('.link')
-      .data(linksCopy)
+      .data(links)
       .enter()
       .append('line')
       .attr('class', 'link')
-      .style('stroke', '#999')
+      .style('stroke', '#999')  // Set a visible color
       .style('stroke-opacity', 0.6)
-      .style('stroke-width', d => {
-        const reverseLinkExists = linksCopy.some(l => l.source === d.target && l.target === d.source);
-        if (reverseLinkExists && d.source.sustainability.carbonFootprint === 'Low' && d.target.sustainability.carbonFootprint === 'Low') {
-          return 2;
-        }
-        return 1;
-      });
+      .style('stroke-width', 2);
 
+    // Create nodes (vehicles and stations)
     const node = svg.selectAll('.node')
-      .data(nodesCopy)
+      .data(nodes)
       .enter()
       .append('circle')
       .attr('class', 'node')
-      .attr('r', radius)
-      .style('fill', d => color(d.energyType))
+      .attr('r', 10)
+      .style('fill', d => d.color)
       .call(d3.drag()
         .on('start', dragstarted)
         .on('drag', dragged)
@@ -107,18 +121,20 @@ const ForceGraph = ({ selectedRegions, selectedEnergyTypes, zoomLevel, onNodeCli
       .on('click', (event, d) => onNodeClick(d));
 
     node.append('title')
-      .text(d => d.company);
+      .text(d => d.label);
 
+    // Add labels for nodes
     const label = svg.selectAll('.label')
-      .data(nodesCopy)
+      .data(nodes)
       .enter()
       .append('text')
       .attr('class', 'label')
       .attr('text-anchor', 'middle')
       .attr('dy', 25)
       .style('font-size', '10px')
-      .text(d => d.company);
+      .text(d => d.label);
 
+    // Update positions during simulation tick
     simulation.on('tick', () => {
       link
         .attr('x1', d => d.source.x)
@@ -127,8 +143,8 @@ const ForceGraph = ({ selectedRegions, selectedEnergyTypes, zoomLevel, onNodeCli
         .attr('y2', d => d.target.y);
 
       node
-        .attr('cx', d => d.x = Math.max(radius, Math.min(width - radius, d.x)))
-        .attr('cy', d => d.y = Math.max(radius, Math.min(height - radius, d.y)));
+        .attr('cx', d => d.x)
+        .attr('cy', d => d.y);
 
       label
         .attr('x', d => d.x)
@@ -142,8 +158,8 @@ const ForceGraph = ({ selectedRegions, selectedEnergyTypes, zoomLevel, onNodeCli
     }
 
     function dragged(event, d) {
-      d.fx = Math.max(radius, Math.min(width - radius, event.x));
-      d.fy = Math.max(radius, Math.min(height - radius, event.y));
+      d.fx = Math.max(10, Math.min(width - 10, event.x));
+      d.fy = Math.max(10, Math.min(height - 10, event.y));
     }
 
     function dragended(event, d) {
@@ -153,13 +169,26 @@ const ForceGraph = ({ selectedRegions, selectedEnergyTypes, zoomLevel, onNodeCli
     }
 
     function handleMouseOver(event, d) {
+      // Set the tooltip opacity and position
       d3.select(tooltipRef.current)
         .transition()
         .duration(200)
-        .style('opacity', 0.9);
-      d3.select(tooltipRef.current).html(`<strong>${d.company}</strong><br/>Region: ${d.region}<br/>Energy Type: ${d.energyType}<br/>Carbon Footprint: ${d.sustainability.carbonFootprint}`)
-        .style('left', `${event.pageX + 5}px`)
-        .style('top', `${event.pageY - 28}px`);
+        .style('opacity', 1);
+
+      // Conditional logic to handle different node types (station or vehicle)
+      let tooltipContent = `<strong>${d.label}</strong><br/>`;
+
+      if (d.type === 'station') {
+        tooltipContent += `Location Type: ${d.locationType}<br/>Zip Code: ${d.zipCode}<br/>Connector Type: ${d.connectorType}`;
+      } else if (d.type === 'vehicle') {
+        tooltipContent += `Brand: ${d.brand}<br/>Model: ${d.model}<br/>Connector Type: ${d.connectorType}`;
+      }
+
+      // Set the tooltip content and position
+      d3.select(tooltipRef.current)
+        .html(tooltipContent)
+        .style('left', `${event.pageX + 10}px`)
+        .style('top', `${event.pageY - 40}px`);
     }
 
     function handleMouseOut() {
@@ -172,12 +201,24 @@ const ForceGraph = ({ selectedRegions, selectedEnergyTypes, zoomLevel, onNodeCli
     return () => {
       svg.selectAll('*').remove();
     };
-  }, [selectedRegions, selectedEnergyTypes, zoomLevel, onNodeClick, dimensions]);
+  }, [stations, vehicles, zoomLevel, onNodeClick, dimensions]);
 
   return (
     <div>
       <svg ref={svgRef}></svg>
-      <div ref={tooltipRef} style={{ position: 'absolute', textAlign: 'center', width: '120px', height: '60px', padding: '2px', font: '12px sans-serif', background: 'lightsteelblue', border: '0px', borderRadius: '8px', pointerEvents: 'none', opacity: 0 }}></div>
+      <div ref={tooltipRef} style={{
+        position: 'absolute',
+        textAlign: 'center',
+        width: '120px',
+        height: '60px',
+        padding: '2px',
+        font: '12px sans-serif',
+        background: 'lightsteelblue',
+        border: '0px',
+        borderRadius: '8px',
+        pointerEvents: 'none',
+        opacity: 0
+      }}></div>
     </div>
   );
 };

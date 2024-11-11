@@ -6,23 +6,24 @@ import { useNavigate } from 'react-router-dom';
 import AddEntity from "./AddEntity"; // Import AddEntity page
 import ListStations from "./ListStations"; // Import ListStations page
 import { Route, Routes } from 'react-router-dom';
+import './Home.css';
 
 const Home = () => {
-    const [selectedRegions, setSelectedRegions] = useState(new Set());
+    const [selectedLocationTypes, setSelectedLocationTypes] = useState(new Set());
     const [selectedEnergyTypes, setSelectedEnergyTypes] = useState(new Set());
     const [carbonFootprintValue, setCarbonFootprintValue] = useState(0);
     const [selectedNode, setSelectedNode] = useState(null);
     const navigate = useNavigate();
 
-    const handleRegionChange = (event) => {
-        const region = event.target.value;
-        const updatedSelectedRegions = new Set(selectedRegions);
-        if (updatedSelectedRegions.has(region)) {
-            updatedSelectedRegions.delete(region);
+    const handleLocationTypeChange = (event) => {
+        const locationType = event.target.value;
+        const updatedSelectedLocationTypes = new Set(selectedLocationTypes);
+        if (updatedSelectedLocationTypes.has(locationType)) {
+            updatedSelectedLocationTypes.delete(locationType);
         } else {
-            updatedSelectedRegions.add(region);
+            updatedSelectedLocationTypes.add(locationType);
         }
-        setSelectedRegions(updatedSelectedRegions);
+        setSelectedLocationTypes(updatedSelectedLocationTypes);
     };
 
     const handleEnergyTypeChange = (event) => {
@@ -61,75 +62,94 @@ const Home = () => {
         <div className="App">
             <div className="sidebar">
                 <div className="checkbox-container">
+
+
                     <div className="filter-card">
-                        <h2>Filter by Region</h2>
-                        <label>
+                        <h2>Filter by Location Type</h2>
+                        <div class="flex items-center">
                             <input
+                                id="link-checkbox"
                                 type="checkbox"
-                                value="North"
-                                onChange={handleRegionChange}
-                            />
-                            North
-                        </label>
-                        <label>
+                                value="supermarket"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 "
+                                onChange={handleLocationTypeChange} />
+                            <label for="link-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 location-type-checkbox"> Supermarket </label>
+                        </div>
+                        <div class="flex items-center">
                             <input
+                                id="link-checkbox"
                                 type="checkbox"
-                                value="South"
-                                onChange={handleRegionChange}
-                            />
-                            South
-                        </label>
-                        <label>
+                                value="shoppingMall"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 "
+                                onChange={handleLocationTypeChange} />
+                            <label for="link-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 location-type-checkbox"> Shopping Mall </label>
+                        </div>
+                        <div class="flex items-center">
                             <input
+                                id="link-checkbox"
                                 type="checkbox"
-                                value="East"
-                                onChange={handleRegionChange}
-                            />
-                            East
-                        </label>
-                        <label>
+                                value="hotel"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 "
+                                onChange={handleLocationTypeChange} />
+                            <label for="link-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 location-type-checkbox"> Hotel </label>
+                        </div>
+                        <div class="flex items-center">
                             <input
+                                id="link-checkbox"
                                 type="checkbox"
-                                value="Oeste"
-                                onChange={handleRegionChange}
-                            />
-                            West
-                        </label>
+                                value="university"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 "
+                                onChange={handleLocationTypeChange} />
+                            <label for="link-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 location-type-checkbox"> University </label>
+                        </div>
+                        <div class="flex items-center">
+                            <input
+                                id="link-checkbox"
+                                type="checkbox"
+                                value="parkingLot"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 "
+                                onChange={handleLocationTypeChange} />
+                            <label for="link-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 location-type-checkbox"> Parking Lot </label>
+                        </div>
+                        <div class="flex items-center">
+                            <input
+                                id="link-checkbox"
+                                type="checkbox"
+                                value="gasStation"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 "
+                                onChange={handleLocationTypeChange} />
+                            <label for="link-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 location-type-checkbox"> Gas Station </label>
+                        </div>
                     </div>
                     <div className="filter-card">
-                        <h2>Filter by Energy Type</h2>
-                        <label>
+                        <h2>Filter by City</h2>
+                        <div class="flex items-center">
                             <input
+                                id="link-checkbox"
                                 type="checkbox"
-                                value="Solar"
-                                onChange={handleEnergyTypeChange}
-                            />
-                            Solar
-                        </label>
-                        <label>
+                                value="guimaraes"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 "
+                                onChange={handleLocationTypeChange} />
+                            <label for="link-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 location-type-checkbox"> Guimaraes </label>
+                        </div>
+                        <div class="flex items-center">
                             <input
+                                id="link-checkbox"
                                 type="checkbox"
-                                value="Eólica"
-                                onChange={handleEnergyTypeChange}
-                            />
-                            Eólica
-                        </label>
-                        <label>
+                                value="porto"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 "
+                                onChange={handleLocationTypeChange} />
+                            <label for="link-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 location-type-checkbox"> Porto </label>
+                        </div>
+                        <div class="flex items-center">
                             <input
+                                id="link-checkbox"
                                 type="checkbox"
-                                value="Nuclear"
-                                onChange={handleEnergyTypeChange}
-                            />
-                            Nuclear
-                        </label>
-                        <label>
-                            <input
-                                type="checkbox"
-                                value="Hidrelétrica"
-                                onChange={handleEnergyTypeChange}
-                            />
-                            Hidrelétrica
-                        </label>
+                                value="aveiro"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 "
+                                onChange={handleLocationTypeChange} />
+                            <label for="link-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 location-type-checkbox"> Aveiro </label>
+                        </div>
                     </div>
 
                     <div className="filter-card">
@@ -160,7 +180,7 @@ const Home = () => {
                     <ContractsGraph selectedNode={selectedNode} />
                 ) : (
                     <ForceGraph
-                        selectedRegions={selectedRegions}
+                        selectedLocationTypes={selectedLocationTypes}
                         selectedEnergyTypes={selectedEnergyTypes}
                         carbonFootprintValue={carbonFootprintValue}
                         onNodeClick={handleNodeClick}

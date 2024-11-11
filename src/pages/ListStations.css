@@ -1,6 +1,29 @@
-.table-stations {
+.container {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    flex-direction: column;
+    gap: 20px;
+    /* Adds space between the tables */
+    justify-content: flex-start;
+    /* Aligns the tables to the top */
+    padding: 20px;
+}
+
+.table-stations,
+.table-vehicles {
+    width: 100%;
+    /* Ensures the tables take up the full width of their parent container */
+    overflow-x: auto;
+    /* Adds horizontal scrolling if content overflows */
+}
+
+.table-stations table,
+.table-vehicles table {
+    width: 100%;
+    border-collapse: collapse;
+    /* Improves the table appearance */
+}
+
+.table-stations table th,
+.table-vehicles table th {
+    background-color: #f2f2f2;
 }
