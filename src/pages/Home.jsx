@@ -53,6 +53,10 @@ const Home = () => {
         navigate('/list-stations');
     };
 
+    const handleForceGraphClick = () => {
+        navigate('/force-graphd3');
+    };
+
     return (
         <div className="App">
             <div className="sidebar">
@@ -138,18 +142,19 @@ const Home = () => {
                                 onClick={handleListStationsClick}>
                                 View Entities
                             </button>
+
+                            {selectedNode && (
+                                <div>
+                                    <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l" onClick={handleBackClick}>
+                                        Back
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
-
-                    {selectedNode && (
-                        <div className="button-container">
-                            <button className="action-button" onClick={handleBackClick}>
-                                Back
-                            </button>
-                        </div>
-                    )}
                 </div>
             </div>
+
             <div className="graph-container">
                 {selectedNode ? (
                     <ContractsGraph selectedNode={selectedNode} />

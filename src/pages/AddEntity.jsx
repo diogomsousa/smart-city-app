@@ -9,7 +9,7 @@ export default function AddEntity() {
 
     const navigate = useNavigate();
     const handleBackToHome = () => {
-        navigate('/'); // Navigate to the home page
+        navigate('/');
     };
 
     const [filter, setFilter] = useState(true); // `true` for vehicle, `false` for charging station
@@ -57,7 +57,7 @@ export default function AddEntity() {
                 handleBackToHome();
             } else {
                 // Posting Vehicle data
-                console.log("Vehicle form submitted");
+                console.log("Vehicle form submitted", vehicle); // You can log it to check
                 await axios.post("http://localhost:8888/vehicle", vehicle);
                 handleBackToHome();
             }
@@ -66,6 +66,7 @@ export default function AddEntity() {
             alert("There was an error submitting the form. Please try again.");
         }
     };
+
 
 
     return (

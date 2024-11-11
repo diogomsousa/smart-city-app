@@ -1,34 +1,38 @@
-// ForceGraph.jsx
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import dataNodes from './data.json';
 
 const ForceGraph = ({ selectedRegions, selectedEnergyTypes, zoomLevel, onNodeClick }) => {
   const svgRef = useRef();
   const tooltipRef = useRef(null);
+  const [dimensions, setDimensions] = useState({
+    width: window.innerWidth * 0.8, // 80% of the window width
+    height: window.innerHeight * 0.8 // 80% of the window height
+  });
+
+  // Update dimensions on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setDimensions({
+        width: window.innerWidth * 0.8,
+        height: window.innerHeight * 0.8
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     console.log('Initial graph rendering or filters changed');
 
-    const width = 800;
-    const height = 500;
+    const { width, height } = dimensions;
     const color = d3.scaleOrdinal(d3.schemeCategory10);
     const radius = 10;
 
     const svg = d3.select(svgRef.current)
       .attr('width', width)
       .attr('height', height);
-
-    svg.call(d3.zoom().transform, d3.zoomIdentity);
-
-    const zoom = d3.zoom()
-      .scaleExtent([0.5, 2])
-      .on('zoom', (event) => {
-        svg.attr('transform', event.transform);
-        node.attr('transform', d => `translate(${Math.max(radius, Math.min(width - radius, d.x))},${Math.max(radius, Math.min(height - radius, d.y))})`);
-      });
-
-    svg.call(zoom);
 
     const nodes = dataNodes.map(d => ({ ...d }));
 
@@ -168,7 +172,7 @@ const ForceGraph = ({ selectedRegions, selectedEnergyTypes, zoomLevel, onNodeCli
     return () => {
       svg.selectAll('*').remove();
     };
-  }, [selectedRegions, selectedEnergyTypes, zoomLevel, onNodeClick]);
+  }, [selectedRegions, selectedEnergyTypes, zoomLevel, onNodeClick, dimensions]);
 
   return (
     <div>
