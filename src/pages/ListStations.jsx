@@ -6,6 +6,7 @@ import axios from 'axios';
 export default function ListStations() {
     const [stations, setStations] = useState([]);
     const [vehicles, setVehicles] = useState([]);
+    const [experiences, setExperiences] = useState([]);
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -35,6 +36,18 @@ export default function ListStations() {
         loadVehicles();
     }, []);
 
+    useEffect(() => {
+        const loadExperiences = async () => {
+            try {
+                const result = await axios.get("http://localhost:8888/experiences");
+                setExperiences(result.data);
+            } catch (error) {
+                console.error("Error loading experiences", error);
+            }
+        };
+        loadExperiences();
+    }, []);
+
     const deleteStation = async (id) => {
         await axios.delete(`http://localhost:8888/stations/${id}`);
         setStations(stations.filter(station => station.id !== id));
@@ -45,6 +58,10 @@ export default function ListStations() {
         setVehicles(vehicles.filter(vehicle => vehicle.id !== id));
     };
 
+    const deleteExperience = async (id) => {
+        await axios.delete(`http://localhost:8888/experiences/${id}`);
+        setVehicles(experiences.filter(experience => experience.id !== id));
+    };
 
 
     // Handle Back to Home
@@ -148,6 +165,47 @@ export default function ListStations() {
                         ) : (
                             <tr>
                                 <td colSpan="9" className="border px-4 py-2 text-center">No vehicles available</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Experiences Table */}
+            <div className='container mx-auto table-vehicles'>
+                <table className="table-auto">
+                    <thead>
+                        <tr>
+                            <th className="px-4 py-2">#</th>
+                            <th className="px-4 py-2">Vehicle</th>
+                            <th className="px-4 py-2">Charging Station</th>
+                            <th className="px-4 py-2">Feedback</th>
+                            <th className="px-4 py-2">Time Ago</th>
+                            <th className="px-4 py-2">X</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {experiences.length > 0 ? (
+                            experiences.map((experience, index) => (
+                                <tr key={experience.id}>
+                                    <td className="border px-4 py-2">{index + 1}</td>
+                                    <td className="border px-4 py-2">{experience.vehicle.brand}</td>
+                                    <td className="border px-4 py-2">{experience.chargingStation.zipCode}</td>
+                                    <td className="border px-4 py-2">
+                                        {experience.feedback ? "Positive" : "Negative"}
+                                    </td>
+                                    <td className="border px-4 py-2">{experience.timeAgo}</td>
+                                    <td className="border px-4 py-2">
+                                        <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l back-default-button"
+                                            onClick={() => deleteExperience(experience.id)}>
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="9" className="border px-4 py-2 text-center">No experiences available</td>
                             </tr>
                         )}
                     </tbody>

@@ -1,0 +1,38 @@
+.form-section {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    /* Align form to the top instead of centering vertically */
+    width: 100%;
+    /* Remove space above form */
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: auto;
+    max-width: none;
+    box-sizing: border-box;
+}
+
+.form-container .w-full.max-w-xs {
+    width: 100%;
+    max-width: 1000px;
+}
+
+.form-container .w-full.max-w-xs form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.button-add-form {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 1.2rem;
+    text-align: center;
+}

@@ -2,11 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import axios from 'axios';
 
-const ForceGraph = ({ zoomLevel, onNodeClick }) => {
+const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick }) => {
   const svgRef = useRef();
-  const tooltipRef = useRef(null);
   const [stations, setStations] = useState([]);
   const [vehicles, setVehicles] = useState([]);
+  const [experiences, setExperiences] = useState([]);
+  const [selectedNode, setSelectedNode] = useState(null);
   const [dimensions, setDimensions] = useState({
     width: window.innerWidth * 0.8, // 80% of the window width
     height: window.innerHeight * 0.8 // 80% of the window height
@@ -16,12 +17,16 @@ const ForceGraph = ({ zoomLevel, onNodeClick }) => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const stationResult = await axios.get("http://localhost:8888/stations");
-        const vehicleResult = await axios.get("http://localhost:8888/vehicles");
+        const [stationResult, vehicleResult, experienceResult] = await Promise.all([
+          axios.get('http://localhost:8888/stations'),
+          axios.get('http://localhost:8888/vehicles'),
+          axios.get('http://localhost:8888/experiences'), // Fetch experience data
+        ]);
         setStations(stationResult.data);
         setVehicles(vehicleResult.data);
+        setExperiences(experienceResult.data); // Store experience data
       } catch (error) {
-        console.error("Error loading data", error);
+        console.error('Error loading data', error);
       }
     };
     loadData();
@@ -42,7 +47,6 @@ const ForceGraph = ({ zoomLevel, onNodeClick }) => {
 
   useEffect(() => {
     const { width, height } = dimensions;
-    const color = d3.scaleOrdinal(d3.schemeCategory10);
 
     const svg = d3.select(svgRef.current)
       .attr('width', width)
@@ -55,77 +59,128 @@ const ForceGraph = ({ zoomLevel, onNodeClick }) => {
         id: `station_${station.id}`,  // Prefix station IDs
         type: 'station', // Indicate it's a station node
         color: 'red', // Color for stations
-        label: station.zipCode
+        label: `${station.locationType} (${station.zipCode})`,
+        originalRadius: 10,  // Base radius for stations
       })),
       ...vehicles.map(vehicle => ({
         ...vehicle,
         id: `vehicle_${vehicle.id}`,  // Prefix vehicle IDs
         type: 'vehicle', // Indicate it's a vehicle node
         color: 'blue', // Color for vehicles
-        label: vehicle.brand
+        label: `${vehicle.brand} ${vehicle.model}`
       })),
     ];
 
-    // Create links based on connector type matching
+    // Create links based on connector type matching and Experience feedback
     const links = [];
 
     vehicles.forEach(vehicle => {
       stations.forEach(station => {
-        // Debugging to log connectorType comparison
-        console.log(`Comparing Vehicle ${vehicle.id} connectorType: ${vehicle.connectorType} with Station ${station.id} connectorType: ${station.connectorType}`);
-
         if (vehicle.connectorType.toLowerCase() === station.connectorType.toLowerCase()) {
-          console.log(`Linking Vehicle ${vehicle.id} with Station ${station.id}`); // Log if a link is created
+          // Find the experience based on Vehicle and ChargingStation IDs
+          const experience = experiences.find(exp =>
+            exp.vehicle.id === vehicle.id && exp.chargingStation.id === station.id
+          );
+
+          // Determine link color based on feedback
+          let linkColor = '#999'; // Default link color (grey)
+          if (experience) {
+            linkColor = experience.feedback ? 'green' : 'red'; // Green for positive feedback, red for negative
+          }
+
+          // Add the link to the array with the correct color
           links.push({
-            source: `vehicle_${vehicle.id}`,  // Vehicle as the source
-            target: `station_${station.id}`   // Station as the target
+            source: `vehicle_${vehicle.id}`,
+            target: `station_${station.id}`,
+            color: linkColor, // Assign the color based on feedback
           });
         }
       });
     });
 
-    // If links are empty, log a message
-    if (links.length === 0) {
-      console.log("No links created. Check connectorType values.");
+    // Apply the feedback filter from the parent (Home) component
+    const filteredLinks = links.filter(link => {
+      if (selectedFeedback.positive && selectedFeedback.negative) {
+        return true;  // Show all links if both are selected
+      } else if (selectedFeedback.positive) {
+        return link.color === 'green';  // Show only positive (green) links
+      } else if (selectedFeedback.negative) {
+        return link.color === 'red';  // Show only negative (red) links
+      } else {
+        return true;  // Show all links if none are selected
+      }
+    });
+
+    // Filter nodes and links based on the selected node
+    let filteredNodes = nodes;
+    let filteredLinksData = filteredLinks;
+
+    if (selectedNode) {
+      // Get the selected node's id and filter connected nodes and links
+      const selectedNodeId = selectedNode.id;
+      const connectedNodes = new Set();
+
+      filteredLinks.forEach(link => {
+        if (link.source === selectedNodeId || link.target === selectedNodeId) {
+          connectedNodes.add(link.source);
+          connectedNodes.add(link.target);
+        }
+      });
+
+      // Filter nodes and links based on connections to the selected node
+      filteredNodes = nodes.filter(node => connectedNodes.has(node.id));
+      filteredLinksData = filteredLinks.filter(link => connectedNodes.has(link.source) && connectedNodes.has(link.target));
     }
 
-    const simulation = d3.forceSimulation(nodes)
-      .force('link', d3.forceLink(links).id(d => d.id).distance(100))
+    // Now filter the nodes based on whether they have any remaining valid connections
+    const filteredNodeIds = new Set();
+    filteredLinksData.forEach(link => {
+      filteredNodeIds.add(link.source);
+      filteredNodeIds.add(link.target);
+    });
+
+    // Filter out the nodes that do not have any valid links
+    filteredNodes = filteredNodes.filter(node => filteredNodeIds.has(node.id));
+
+    const simulation = d3.forceSimulation(filteredNodes)
+      .force('link', d3.forceLink(filteredLinksData).id(d => d.id).distance(100))
       .force('charge', d3.forceManyBody().strength(-200))
       .force('center', d3.forceCenter(width / 2, height / 2));
 
-    // Ensure that links are rendered with a visible style
+    // Render links with the color logic and thicker edges for green or red links
     const link = svg.selectAll('.link')
-      .data(links)
+      .data(filteredLinksData)
       .enter()
       .append('line')
       .attr('class', 'link')
-      .style('stroke', '#999')  // Set a visible color
+      .style('stroke', d => d.color)  // Use the color from the link data
       .style('stroke-opacity', 0.6)
-      .style('stroke-width', 2);
+      .style('stroke-width', d => d.color === 'green' || d.color === 'red' ? 4 : 2);  // Thicker edges for green or red links
 
-    // Create nodes (vehicles and stations)
+
+    // Render nodes (vehicles and stations)
     const node = svg.selectAll('.node')
-      .data(nodes)
+      .data(filteredNodes)
       .enter()
       .append('circle')
       .attr('class', 'node')
-      .attr('r', 10)
+      .attr('r', d => d.type === 'station' ? d.originalRadius : 10)  // Set radius based on node type and linked vehicles
       .style('fill', d => d.color)
       .call(d3.drag()
         .on('start', dragstarted)
         .on('drag', dragged)
         .on('end', dragended))
-      .on('mouseover', handleMouseOver)
-      .on('mouseout', handleMouseOut)
-      .on('click', (event, d) => onNodeClick(d));
+      .on('click', (event, d) => {
+        setSelectedNode(d);  // Set the clicked node as the selected node
+        onNodeClick(d);  // Call the onNodeClick function passed from parent
+      });
 
     node.append('title')
       .text(d => d.label);
 
     // Add labels for nodes
     const label = svg.selectAll('.label')
-      .data(nodes)
+      .data(filteredNodes)
       .enter()
       .append('text')
       .attr('class', 'label')
@@ -168,57 +223,30 @@ const ForceGraph = ({ zoomLevel, onNodeClick }) => {
       d.fy = null;
     }
 
-    function handleMouseOver(event, d) {
-      // Set the tooltip opacity and position
-      d3.select(tooltipRef.current)
-        .transition()
-        .duration(200)
-        .style('opacity', 1);
-
-      // Conditional logic to handle different node types (station or vehicle)
-      let tooltipContent = `<strong>${d.label}</strong><br/>`;
-
-      if (d.type === 'station') {
-        tooltipContent += `Location Type: ${d.locationType}<br/>Zip Code: ${d.zipCode}<br/>Connector Type: ${d.connectorType}`;
-      } else if (d.type === 'vehicle') {
-        tooltipContent += `Brand: ${d.brand}<br/>Model: ${d.model}<br/>Connector Type: ${d.connectorType}`;
-      }
-
-      // Set the tooltip content and position
-      d3.select(tooltipRef.current)
-        .html(tooltipContent)
-        .style('left', `${event.pageX + 10}px`)
-        .style('top', `${event.pageY - 40}px`);
-    }
-
-    function handleMouseOut() {
-      d3.select(tooltipRef.current)
-        .transition()
-        .duration(500)
-        .style('opacity', 0);
-    }
-
     return () => {
       svg.selectAll('*').remove();
     };
-  }, [stations, vehicles, zoomLevel, onNodeClick, dimensions]);
+  }, [stations, vehicles, experiences, zoomLevel, selectedFeedback, onNodeClick, selectedNode, dimensions]);
 
   return (
     <div>
       <svg ref={svgRef}></svg>
-      <div ref={tooltipRef} style={{
-        position: 'absolute',
-        textAlign: 'center',
-        width: '120px',
-        height: '60px',
-        padding: '2px',
-        font: '12px sans-serif',
-        background: 'lightsteelblue',
-        border: '0px',
-        borderRadius: '8px',
-        pointerEvents: 'none',
-        opacity: 0
-      }}></div>
+
+      {/* Render the "Back" button if a node is selected */}
+      {selectedNode && (
+        <button
+          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l"
+          style={{
+            position: 'absolute',
+            top: '20px',
+            right: '20px',  // Move the button to the right
+            zIndex: 10
+          }}
+          onClick={() => setSelectedNode(null)} // Reset the selected node when the button is clicked
+        >
+          Back
+        </button>
+      )}
     </div>
   );
 };

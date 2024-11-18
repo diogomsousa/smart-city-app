@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import "./App.css";
 import AddEntity from "./pages/AddEntity";
 import ListStations from "./pages/ListStations";
+import Experience from "./pages/Experience";
 
 function App() {
 
@@ -13,6 +14,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/add-entity" element={<AddEntity />} />
         <Route path="/list-stations" element={<ListStations />} />
+        <Route path="/experience" element={<Experience />} />
       </Routes>
     </Router>
 
