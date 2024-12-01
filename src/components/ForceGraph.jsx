@@ -98,16 +98,16 @@ const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick }) => {
       });
     });
 
-    // Apply the feedback filter from the parent (Home) component
+    // Apply the feedback filter
     const filteredLinks = links.filter(link => {
       if (selectedFeedback.positive && selectedFeedback.negative) {
-        return true;  // Show all links if both are selected
+        return true;
       } else if (selectedFeedback.positive) {
-        return link.color === 'green';  // Show only positive (green) links
+        return link.color === 'green';
       } else if (selectedFeedback.negative) {
-        return link.color === 'red';  // Show only negative (red) links
+        return link.color === 'red';
       } else {
-        return true;  // Show all links if none are selected
+        return true;
       }
     });
 

@@ -12,8 +12,7 @@ export default function AddEntity() {
         navigate('/');
     };
 
-    const [filter, setFilter] = useState(true); // `true` for vehicle, `false` for charging station
-    const toggleFilter = () => setFilter(false); // Set it to `false` for ChargingStation
+    const [filter, setFilter] = useState('vehicle');
 
     const [chargingStation, setChargingStation] = useState({
         locationType: "",
@@ -26,11 +25,6 @@ export default function AddEntity() {
         paymentModel: ""
     });
 
-    const updateChargingStation = (updatedChargingStation) => {
-        setChargingStation(updatedChargingStation);
-    };
-
-
     const [vehicle, setVehicle] = useState({
         brand: "",
         model: "",
@@ -42,31 +36,72 @@ export default function AddEntity() {
         plugCharge: false
     });
 
-    const updateVehicle = (updatedVehicle) => {
-        setVehicle(updatedVehicle);
-    };
+    const [refrigerator, setRefrigerator] = useState({
+        brand: "",
+        model: "",
+        powerConsumption: 200,
+        energyRating: "",
+        dimensions: "",
+        temperatureRange: ""
+    });
+
+    const [solarPanel, setSolarPanel] = useState({
+        panelType: "",
+        capacity: 300,
+        efficiency: 18,
+        dimensions: "",
+        manufacturer: ""
+    });
+
+    const [battery, setBattery] = useState({
+        brand: "",
+        model: "",
+        capacity: 5000,
+        voltage: 48,
+        technology: "Lithium-Ion",
+        chargeCycles: 1000
+    });
+
+
+
+
+    const updateVehicle = (updatedVehicle) => setVehicle(updatedVehicle);
+    const updateChargingStation = (updatedChargingStation) => setChargingStation(updatedChargingStation);
+    const updateRefrigerator = (updatedRefrigerator) => setRefrigerator(updatedRefrigerator);
+    const updateSolarPanel = (updatedSolarPanel) => setSolarPanel(updatedSolarPanel);
+    const updateBattery = (updatedBattery) => setBattery(updatedBattery);
 
 
 
     const onSubmit = async (e) => {
         e.preventDefault();
         try {
-            if (!filter) {
-                // Posting Charging Station data
-                await axios.post("http://localhost:8888/charging_station", chargingStation);
-                handleBackToHome();
-            } else {
-                // Posting Vehicle data
-                console.log("Vehicle form submitted", vehicle); // You can log it to check
-                await axios.post("http://localhost:8888/vehicle", vehicle);
-                handleBackToHome();
+            switch (filter) {
+                case 'vehicle':
+                    await axios.post("http://localhost:8888/vehicle", vehicle);
+                    break;
+                case 'chargingStation':
+                    await axios.post("http://localhost:8888/charging_station", chargingStation);
+                    break;
+                case 'refrigerator':
+                    await axios.post("http://localhost:8888/refrigerator", refrigerator);
+                    break;
+                case 'solarPanel':
+                    await axios.post("http://localhost:8888/solar_panel", solarPanel);
+                    break;
+                case 'battery':
+                    await axios.post("http://localhost:8888/battery", battery);
+                    break;
+                default:
+                    alert("Invalid entity type!");
+                    return;
             }
+            handleBackToHome();
         } catch (error) {
             console.error("Error posting data: ", error);
             alert("There was an error submitting the form. Please try again.");
         }
     };
-
 
 
     return (
@@ -92,8 +127,8 @@ export default function AddEntity() {
                                     value="vehicle"
                                     name="inline-radio-group"
                                     defaultChecked={true}
-                                    checked={filter === true}  // This will check this radio button when filter is true
-                                    onChange={() => setFilter(true)}  // Update filter when this button is selected
+                                    checked={filter === true}
+                                    onChange={() => setFilter(true)}
                                     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
                                 <label htmlFor="inline-radio" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Vehicle</label>
                             </div>
@@ -103,10 +138,43 @@ export default function AddEntity() {
                                     type="radio"
                                     value="chargingstation"
                                     name="inline-radio-group"
-                                    checked={filter === false}  // This will check this radio button when filter is false
-                                    onChange={() => setFilter(false)}  // Update filter when this button is selected
+                                    checked={filter === false}
+                                    onChange={() => setFilter(false)}
                                     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
                                 <label htmlFor="inline-2-radio" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Charging Station</label>
+                            </div>
+                            <div className="flex items-center me-4">
+                                <input
+                                    id="inline-radio"
+                                    type="radio"
+                                    value="vehicle"
+                                    name="inline-radio-group"
+                                    checked={filter === false}
+                                    onChange={() => setFilter(false)}
+                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                                <label htmlFor="inline-radio" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Refrigerator</label>
+                            </div>
+                            <div className="flex items-center me-4">
+                                <input
+                                    id="inline-radio"
+                                    type="radio"
+                                    value="vehicle"
+                                    name="inline-radio-group"
+                                    checked={filter === false}
+                                    onChange={() => setFilter(false)}
+                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                                <label htmlFor="inline-radio" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Solar Panel</label>
+                            </div>
+                            <div className="flex items-center me-4">
+                                <input
+                                    id="inline-radio"
+                                    type="radio"
+                                    value="vehicle"
+                                    name="inline-radio-group"
+                                    checked={filter === false}
+                                    onChange={() => setFilter(false)}
+                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                                <label htmlFor="inline-radio" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Battery</label>
                             </div>
                         </div>
                     </a>
