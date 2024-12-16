@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import axios from 'axios';
+import { fetchChargingStations, fetchVehicles, fetchExperiences } from '../services/api';
 
-const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick }) => {
+const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick, onLinkClick }) => {
   const svgRef = useRef();
   const [stations, setStations] = useState([]);
   const [vehicles, setVehicles] = useState([]);
@@ -13,18 +14,17 @@ const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick }) => {
     height: window.innerHeight * 0.8 // 80% of the window height
   });
 
-  // Fetch Stations and Vehicles
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [stationResult, vehicleResult, experienceResult] = await Promise.all([
-          axios.get('http://localhost:8888/stations'),
-          axios.get('http://localhost:8888/vehicles'),
-          axios.get('http://localhost:8888/experiences'), // Fetch experience data
+        const [stationData, vehicleData, experienceData] = await Promise.all([
+          fetchChargingStations(),
+          fetchVehicles(),
+          fetchExperiences(),
         ]);
-        setStations(stationResult.data);
-        setVehicles(vehicleResult.data);
-        setExperiences(experienceResult.data); // Store experience data
+        setStations(stationData);
+        setVehicles(vehicleData);
+        setExperiences(experienceData);
       } catch (error) {
         console.error('Error loading data', error);
       }
@@ -127,8 +127,9 @@ const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick }) => {
         }
       });
 
-      // Filter nodes and links based on connections to the selected node
-      filteredNodes = nodes.filter(node => connectedNodes.has(node.id));
+      filteredNodes = nodes.filter(node => {
+        return filteredNodeIds.has(node.id) || links.every(link => link.source !== node.id && link.target !== node.id);
+      });
       filteredLinksData = filteredLinks.filter(link => connectedNodes.has(link.source) && connectedNodes.has(link.target));
     }
 
@@ -140,12 +141,14 @@ const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick }) => {
     });
 
     // Filter out the nodes that do not have any valid links
-    filteredNodes = filteredNodes.filter(node => filteredNodeIds.has(node.id));
+    filteredNodes = nodes.filter(node => filteredNodeIds.has(node.id) || links.every(link => link.source !== node.id && link.target !== node.id));
 
     const simulation = d3.forceSimulation(filteredNodes)
       .force('link', d3.forceLink(filteredLinksData).id(d => d.id).distance(100))
-      .force('charge', d3.forceManyBody().strength(-200))
-      .force('center', d3.forceCenter(width / 2, height / 2));
+      .force('charge', d3.forceManyBody().strength(-300)) // Increase repulsion strength
+      .force('center', d3.forceCenter(width / 2, height / 2))
+      .force('collision', d3.forceCollide().radius(20)); // Prevent overlap
+
 
     // Render links with the color logic and thicker edges for green or red links
     const link = svg.selectAll('.link')
@@ -157,6 +160,10 @@ const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick }) => {
       .style('stroke-opacity', 0.6)
       .style('stroke-width', d => d.color === 'green' || d.color === 'red' ? 4 : 2);  // Thicker edges for green or red links
 
+    link.on('click', (event, d) => {
+      // Call the parent callback function with the link data
+      onLinkClick(d);
+    });
 
     // Render nodes (vehicles and stations)
     const node = svg.selectAll('.node')
@@ -226,7 +233,7 @@ const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick }) => {
     return () => {
       svg.selectAll('*').remove();
     };
-  }, [stations, vehicles, experiences, zoomLevel, selectedFeedback, onNodeClick, selectedNode, dimensions]);
+  }, [stations, vehicles, experiences, zoomLevel, selectedFeedback, onNodeClick, onLinkClick, selectedNode, dimensions]);
 
   return (
     <div>

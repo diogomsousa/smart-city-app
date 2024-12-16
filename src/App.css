@@ -1,3 +1,4 @@
+/* Body styling */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -5,36 +6,44 @@ body {
   background-color: #f0f0f0;
 }
 
+/* App container */
 .App {
   display: flex;
   padding: 20px;
   height: 100vh;
-  /* Preenche toda a altura da tela */
+  /* Occupies full viewport height */
 }
 
+/* Sidebar styling */
 .sidebar {
-  width: 250px;
+  width: 200px;
+  /* Reduced width of sidebar */
   background-color: #ffffff;
-  padding: 20px;
-  padding-bottom: 20px;
-  /* Define o espaçamento inferior da sidebar */
+  padding: 15px;
+  /* Reduced padding */
+  padding-bottom: 15px;
+  /* Reduced bottom padding */
   border-radius: 8px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  /* Alinha os itens à esquerda */
   height: auto;
-  /* Ajusta a altura automaticamente */
+  margin: 10px;
+  /* Margin added around sidebar */
 }
 
+/* Checkbox container width adjustment */
 .checkbox-container {
   width: 100%;
 }
 
+/* Filter card adjustments */
 .filter-card {
-  margin-bottom: 20px;
-  padding-bottom: 20px;
+  margin-bottom: 15px;
+  /* Reduced margin */
+  padding-bottom: 15px;
+  /* Reduced padding */
   border-bottom: 1px solid #ddd;
   width: 100%;
 }
@@ -44,26 +53,29 @@ body {
 }
 
 .filter-card h2 {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  /* Reduced margin */
   font-size: 14px;
-  /* Tamanho menor para o título do filtro */
+  /* Smaller font size for filter headings */
 }
 
 .filter-card label {
   display: block;
-  margin-bottom: 8px;
-  /* Espaçamento menor entre os labels */
+  margin-bottom: 6px;
+  /* Smaller margin between labels */
   font-size: 12px;
-  /* Tamanho menor para o texto dos labels */
+  /* Smaller font size for labels */
 }
 
+/* Carbon filter section */
 .carbon-filter {
-  margin-top: 20px;
-  padding-bottom: 20px;
+  margin-top: 15px;
+  padding-bottom: 15px;
   border-bottom: 1px solid #ddd;
   width: 100%;
 }
 
+/* Slider style adjustments */
 .slider {
   -webkit-appearance: none;
   appearance: none;
@@ -109,12 +121,12 @@ body {
   color: #555;
 }
 
+/* Button container and action button styles */
 .button-container {
   width: 100%;
   display: flex;
   flex-direction: column;
   margin-top: auto;
-  /* Coloca o espaço restante acima dos botões */
 }
 
 .action-button {
@@ -130,56 +142,45 @@ body {
 
 .action-button:last-child {
   margin-bottom: 0;
-  /* Remove margem inferior do último botão */
 }
 
 .action-button:hover {
   background-color: #f0f0f0;
 }
 
+/* Graph container */
 .graph-container {
   flex: 1;
-  /* Ocupa todo o espaço restante */
   display: flex;
   justify-content: center;
-  /* Centraliza o conteúdo horizontalmente */
   align-items: center;
-  /* Centraliza o conteúdo verticalmente */
   overflow: hidden;
-  /* Evita que o gráfico vaze para fora do container */
 }
 
+/* Node styling */
 .node {
   fill: #1f78b4;
-  /* Cor de preenchimento padrão dos nós */
   stroke: #fff;
-  /* Cor do contorno dos nós */
   stroke-width: 2px;
-  /* Largura do contorno dos nós */
 }
 
 .node.highlighted {
   stroke: #000;
-  /* Cor do contorno dos nós quando destacados */
   stroke-width: 3px;
-  /* Largura do contorno dos nós quando destacados */
   stroke-dasharray: 4;
-  /* Estilo da linha tracejada para nós destacados */
 }
 
-
+/* Sidebar button and button-container styling */
 .button-sidebar {
   gap: 1px;
   padding: 2px;
 }
-
 
 .button-sidebar-container {
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
-
 
 .back-default-button {
   display: flex;
@@ -188,21 +189,44 @@ body {
   margin: 20px;
 }
 
-
 .region-sidebar-filters {
   display: flex;
   flex-direction: column;
   gap: 1px;
 }
 
-
-
-/* Full-width (spans both columns) for certain elements */
+/* Full-width for certain elements */
 .col-span-2 {
   grid-column: span 2;
 }
 
-/* Optional styling for each form item */
+/* Form item styling */
 .mb-4 {
   margin-bottom: 16px;
+}
+
+/* Link Sidebar styling */
+.link-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 250px;
+  /* Reduced width of link sidebar */
+  height: 100%;
+  background-color: #fff;
+  padding: 20px;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  overflow-y: auto;
+}
+
+.link-sidebar .sidebar-content {
+  font-size: 16px;
+}
+
+.no-link-selected {
+  font-size: 18px;
+  color: #aaa;
+  text-align: center;
+  margin-top: 50px;
 }

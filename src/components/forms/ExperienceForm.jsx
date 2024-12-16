@@ -1,15 +1,54 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
-export default function ExperienceForm({ experience, updateExperience, vehicles, chargingStations }) {
+export default function ExperienceForm({
+    experience,
+    updateExperience,
+    vehicles,
+    chargingStations,
+}) {
     const { vehicle, chargingStation, feedback, timeAgo } = experience;
+
+    // State to track the currently selected vehicle's connector type
+    const [selectedConnectorType, setSelectedConnectorType] = useState("");
+
+    // Update connector type when a vehicle is selected
+    useEffect(() => {
+        if (vehicle) {
+            // Find the vehicle in the vehicles array by matching the vehicle ID
+            const selectedVehicle = vehicles.find((v) => v.id === vehicle);
+            console.log("Selected Vehicle:", selectedVehicle); // Debugging the selected vehicle
+            if (selectedVehicle) {
+                setSelectedConnectorType(selectedVehicle.connectorType || "");
+            }
+        }
+    }, [vehicle, vehicles]); // Ensure this runs whenever `vehicle` or `vehicles` changes
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+
+        // If the vehicle is changed, update the connector type filter
+        if (name === "vehicle") {
+            const selectedVehicle = vehicles.find((v) => v.id === value);
+            console.log("Vehicle Changed: ", selectedVehicle); // Debugging the changed vehicle
+            setSelectedConnectorType(selectedVehicle?.connectorType || ""); // Update the connector type
+        }
+
+        // Update the form state for other fields
         updateExperience({
             ...experience,
             [name]: name === "feedback" ? value === "true" : value, // Convert string "true"/"false" to boolean
         });
     };
+
+    // Filter charging stations based on the selected vehicle's connector type
+    const filteredChargingStations = selectedConnectorType
+        ? chargingStations.filter(
+            (station) => station.connectorType === selectedConnectorType
+        )
+        : chargingStations;
+
+    console.log("Filtered Charging Stations:", filteredChargingStations); // Debugging filtered charging stations
+    console.log("vehicle", vehicle); // Debugging the vehicle ID
 
     return (
         <div>
@@ -22,7 +61,7 @@ export default function ExperienceForm({ experience, updateExperience, vehicles,
                     name="vehicle"
                     className="shadow border border-gray-300 rounded w-full py-2 px-3 text-gray-700"
                     onChange={handleChange}
-                    value={vehicle}
+                    value={vehicle || ""} // Ensure the vehicle prop is just the ID
                 >
                     <option value="">Select a vehicle</option>
                     {vehicles.map((v) => (
@@ -45,11 +84,17 @@ export default function ExperienceForm({ experience, updateExperience, vehicles,
                     value={chargingStation}
                 >
                     <option value="">Select a charging station</option>
-                    {chargingStations.map((station) => (
-                        <option key={station.id} value={station.id}>
-                            {station.locationType} ({station.zipCode})
+                    {filteredChargingStations.length > 0 ? (
+                        filteredChargingStations.map((station) => (
+                            <option key={station.id} value={station.id}>
+                                {station.locationType} ({station.zipCode})
+                            </option>
+                        ))
+                    ) : (
+                        <option value="" disabled>
+                            No stations available with the selected connector type
                         </option>
-                    ))}
+                    )}
                 </select>
             </div>
 

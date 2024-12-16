@@ -2,7 +2,7 @@
 import React from 'react';
 
 export default function RequestForm({ request, vehicles, updateRequest }) {
-    const { vehicle, chargeMode, distance } = request;
+    const { vehicle, chargeMode } = request;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -12,13 +12,13 @@ export default function RequestForm({ request, vehicles, updateRequest }) {
         });
     };
 
-    const updateDistance = (e) => {
-        const value = parseInt(e.target.value, 10); // Ensure it's a number
-        updateRequest({
-            ...request,
-            distance: value, // Specifically update the distance
-        });
-    };
+    // const updateDistance = (e) => {
+    //     const value = parseInt(e.target.value, 10); // Ensure it's a number
+    //     updateRequest({
+    //         ...request,
+    //         distance: value, // Specifically update the distance
+    //     });
+    // };
 
     return (
         <div>
@@ -82,7 +82,7 @@ export default function RequestForm({ request, vehicles, updateRequest }) {
                 </div>
             </div>
 
-            <div className="mb-4">
+            {/* <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="distance">
                     Distance
                 </label>
@@ -94,13 +94,13 @@ export default function RequestForm({ request, vehicles, updateRequest }) {
                     min="20"
                     max="500"
                     value={distance}
-                    onChange={updateDistance} // Call updateDistance
+                    onChange={updateDistance}
                 />
                 <div className="flex justify-between text-gray-500">
                     <span>{distance} Km</span>
                     <span>500 Km</span>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 }
