@@ -1,8 +1,7 @@
-// RequestForm.js
 import React from 'react';
 
 export default function RequestForm({ request, vehicles, updateRequest }) {
-    const { vehicle, chargeMode } = request;
+    const { vehicle, chargeMode, distance } = request;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -12,13 +11,13 @@ export default function RequestForm({ request, vehicles, updateRequest }) {
         });
     };
 
-    // const updateDistance = (e) => {
-    //     const value = parseInt(e.target.value, 10); // Ensure it's a number
-    //     updateRequest({
-    //         ...request,
-    //         distance: value, // Specifically update the distance
-    //     });
-    // };
+    const handleDistanceChange = (e) => {
+        const value = e.target.value; // Distance will be the value of the selected option
+        updateRequest({
+            ...request,
+            distance: value, // Update the distance in the request
+        });
+    };
 
     return (
         <div>
@@ -81,8 +80,7 @@ export default function RequestForm({ request, vehicles, updateRequest }) {
                     </label>
                 </div>
             </div>
-
-            {/* <div className="mb-4">
+            <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="distance">
                     Distance
                 </label>
@@ -91,16 +89,35 @@ export default function RequestForm({ request, vehicles, updateRequest }) {
                     id="distance"
                     name="distance"
                     className="w-full accent-indigo-600 capacity-container"
-                    min="20"
-                    max="500"
+                    min="1"
+                    max="200"
                     value={distance}
-                    onChange={updateDistance}
+                    onChange={handleDistanceChange}
                 />
                 <div className="flex justify-between text-gray-500">
                     <span>{distance} Km</span>
-                    <span>500 Km</span>
+                    <span>200 Km</span>
                 </div>
+            </div>
+            {/* <div className="mb-4">
+                <label htmlFor="distance" className="block text-gray-700 text-sm font-bold mb-2">
+                    Select distance
+                </label>
+                <select
+                    id="distance"
+                    name="distance"
+                    className="shadow border border-gray-300 rounded w-full py-2 px-3 text-gray-700"
+                    value={distance}
+                    onChange={handleDistanceChange} // Handling the change for distance
+                >
+                    <option value="">Select distance</option>
+                    <option value="200">200 Km</option>
+                    <option value="400">400 Km</option>
+                    <option value="600">600 Km</option>
+                    <option value="800">800 Km</option>
+                </select>
             </div> */}
+
         </div>
     );
 }

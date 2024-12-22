@@ -5,7 +5,7 @@ import './VehicleForm.css';
 export default function VehicleForm({ vehicle, updateVehicle }) {
 
 
-    const { brand, model, portLocation, batteryCapacity, thermalSystem, connectorType, chargingBehavior } = vehicle;
+    const { brand, model, portLocation, batteryCapacity, thermalSystem, connectorType, chargingBehavior, longitude, latitude } = vehicle;
 
     const handleChangeVehicle = (e) => {
         const { name, value } = e.target;
@@ -107,6 +107,30 @@ export default function VehicleForm({ vehicle, updateVehicle }) {
                     onChange={handleChangeVehicle}
                     value={chargingBehavior}
                 />
+            </div>
+
+            <div className="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="longitude">
+                    Longitude
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    type="text"
+                    placeholder="Longitude"
+                    name='longitude'
+                    onChange={handleChangeVehicle}
+                    value={longitude} />
+            </div>
+
+            <div className="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="latitude">
+                    Latitude
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    type="text"
+                    placeholder="Latitude"
+                    name='latitude'
+                    onChange={handleChangeVehicle}
+                    value={latitude} />
             </div>
         </div>
 

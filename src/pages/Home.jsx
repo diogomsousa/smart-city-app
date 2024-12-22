@@ -7,11 +7,10 @@ import { Route, Routes } from 'react-router-dom';
 import './Home.css';
 import Experience from "./Experience";
 import Modal from "../components/Modal";
-import { fetchVehicles, fetchChargingStations } from "../services/api";
+import { fetchVehicles, fetchChargingStations, fetchExperiences } from "../services/api";
 import RequestForm from "../components/forms/RequestForm";
 import ViewEntities from "./ViewEntities";
-import LinkSidebar from "../components/LinkSidebar"; // Import LinkSidebar
-import { link } from "d3";
+import LinkSidebar from "../components/LinkSidebar";
 
 const Home = () => {
     const [selectedNode, setSelectedNode] = useState(null);  // Track selected node
@@ -22,17 +21,20 @@ const Home = () => {
     });
     const [isModalOpen, setIsModalOpen] = useState(false); // Modal open state
     const [request, setRequest] = useState({
-        vehicle: '',       // default empty vehicle value
-        chargeMode: true,  // default to true (fast charging)
+        vehicle: '',
+        chargeMode: true,
+        distance: 50,
     });
 
     const [chargeMode, setChargeMode] = useState(true);
     const [selectedVehicleType, setSelectedVehicleType] = useState(true);
     const [selectedVehicleModel, setSelectedVehicleModel] = useState(true);
     const [selectedVehicle, setSelectedVehicle] = useState('');
+    const [selectedDistance, setSelectedDistance] = useState('');
 
     const [vehicles, setVehicles] = useState([]);
     const [chargingStations, setChargingStations] = useState([]);
+    const [experiences, setExperiences] = useState([]);
     const [showSidebar, setShowSidebar] = useState(true); // Controls the visibility of the sidebar
 
     const navigate = useNavigate();
@@ -47,6 +49,10 @@ const Home = () => {
 
                 const stationData = await fetchChargingStations(); // Fetch charging stations
                 setChargingStations(stationData);
+
+                const experienceData = await fetchExperiences();
+                console.log('Fetched experiences:', experienceData);
+                setExperiences(experienceData);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -73,13 +79,33 @@ const Home = () => {
         setSelectedLink(null);
     };
 
-    const handleLinkClick = (linkData) => {
 
+    //LinkSidebar display
+    const handleLinkClick = (linkData) => {
         const station = linkData.target;
         const vehicle = linkData.source;
 
-        setSelectedLink({ vehicle, station });
-        setShowSidebar(true); // Ensure sidebar is shown when a new link is clicked
+        let stationId = station.id;
+        let vehicleId = vehicle.id;
+
+        let resultStation = stationId.replace(/\D/g, '');
+        let resultVehicle = vehicleId.replace(/\D/g, '');
+
+        let numStation = parseInt(resultStation, 10);
+        let numVehicle = parseInt(resultVehicle, 10);
+
+        console.log("Station", station);
+        console.log("Vehicle", vehicle);
+
+        const relatedExperiences = experiences.filter(
+            (exp) => exp.vehicle.id === numVehicle && exp.chargingStation.id === numStation
+        );
+
+        console.log("Related Experiences:", relatedExperiences); // Log to verify the filtered experiences
+
+        // Set the selectedLink with vehicle, station, and related experiences
+        setSelectedLink({ vehicle, station, experiences: relatedExperiences });
+        setShowSidebar(true); // Ensure the sidebar is shown when a new link is clicked
     };
 
     const handleAddEntityClick = () => {
@@ -102,12 +128,14 @@ const Home = () => {
         setIsModalOpen(false);
     };
 
+
     const handleSubmit = () => {
         console.log('Form submitted with request:', request);
         closeModal();
 
         setChargeMode(request.chargeMode);
         setSelectedVehicle(request.vehicle);
+        setSelectedDistance(request.distance);
     };
 
     const filteredStations = chargingStations.filter(station => {
@@ -201,6 +229,7 @@ const Home = () => {
                     request={request}
                     selectedVehicle={selectedVehicle}
                     setSelectedVehicle={setSelectedVehicle}
+                    setSelectedDistance={setSelectedDistance}
                     filteredStations={filteredStations}
                     onLinkClick={handleLinkClick}
                 />

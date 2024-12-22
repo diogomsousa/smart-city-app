@@ -4,33 +4,49 @@ import './LinkSidebar.css';
 const LinkSidebar = ({ selectedLink, handleBackClick }) => {
     const renderSidebarContent = () => {
         if (selectedLink) {
-            const { vehicle, station } = selectedLink; // Destructure vehicle and station from selectedLink
+            const { vehicle, station, experiences } = selectedLink; // Destructure vehicle, station, and experiences
 
             return (
                 <div className="sidebar-content">
-                    <div>
-                        <br></br>
-                        <h2>Link Information</h2>
-                        <br></br>
-                        <div class="flex gap-x-3">
-                            {/* <div class="w-16 text-end">
-                                <span class="text-xs text-gray-500 dark:text-neutral-400">12:05PM</span>
-                            </div> */}
-                            <div class="relative last:after:hidden after:absolute after:top-7 after:bottom-0 after:start-3.5 after:w-px after:-translate-x-[0.5px] after:bg-gray-200 dark:after:bg-neutral-700">
-                                <div class="relative z-10 size-7 flex justify-center items-center">
-                                    <div class="size-2 rounded-full bg-gray-400 dark:bg-neutral-600"></div>
-                                </div>
+                    <br />
+                    <h2 className="text-lg font-bold text-gray-800 dark:text-white">Link Information</h2>
+                    <br />
+
+                    <div className="flex gap-x-3">
+                        <div className="relative last:after:hidden after:absolute after:top-7 after:bottom-0 after:start-3.5 after:w-px after:-translate-x-[0.5px] after:bg-gray-200 dark:after:bg-neutral-700">
+                            <div className="relative z-10 size-7 flex justify-center items-center">
+                                <div className="size-2 rounded-full bg-gray-400 dark:bg-neutral-600"></div>
                             </div>
-                            <div class="grow pt-0.5 pb-8">
-                                <h3 class="flex gap-x-1.5 font-semibold text-gray-800 dark:text-white">
-                                    <strong> {vehicle ? vehicle.brand : 'N/A'} {vehicle ? vehicle.model : 'N/A'}</strong>
-                                </h3>
-                                <h3 class="flex gap-x-1.5 font-semibold text-gray-800 dark:text-white">
-                                    <strong> {station ? station.zipCode : 'N/A'} {station ? station.locationType : 'N/A'}</strong>
-                                </h3>
-                                <p class="mt-1 text-sm text-gray-600 dark:text-neutral-400">
-                                    <strong>Feedback:</strong> {vehicle ? vehicle.model : 'N/A'}
-                                </p>
+                        </div>
+
+                        <div className="grow pt-0.5 pb-8">
+                            {/* Vehicle Information */}
+                            <h3 className="flex gap-x-1.5 font-semibold text-gray-800 dark:text-white">
+                                <strong>{vehicle ? `${vehicle.brand} ${vehicle.model}` : 'N/A'}</strong>
+                            </h3>
+
+                            {/* Station Information */}
+                            <h3 className="flex gap-x-1.5 font-semibold text-gray-800 dark:text-white">
+                                <strong>{station ? `${station.zipCode} - ${station.locationType}` : 'N/A'}</strong>
+                            </h3>
+
+                            {/* experiences Section */}
+                            <div className="mt-4">
+                                <h4 className="font-semibold text-gray-800 dark:text-white">Experiences:</h4>
+                                <ul className="list-disc pl-5 mt-2">
+                                    {experiences && experiences.length > 0 ? (
+                                        experiences.map((experience, index) => (
+                                            <li key={index} className={experience.feedback ? 'text-green-600' : 'text-red-600'}>
+                                                <strong>{experience.feedback ? 'Positive' : 'Negative'}</strong> {experience.comment}
+                                                <span className="text-sm text-gray-500">
+                                                    {new Date(experience.createdDate).toLocaleString()}
+                                                </span>
+                                            </li>
+                                        ))
+                                    ) : (
+                                        <li>No experience available.</li>
+                                    )}
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -43,18 +59,17 @@ const LinkSidebar = ({ selectedLink, handleBackClick }) => {
 
     return (
         <div>
-
-
-
             <div className="link-sidebar">
-                <button onClick={handleBackClick} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l">
+                {/* Back Button */}
+                <button
+                    onClick={handleBackClick}
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l"
+                >
                     Back
                 </button>
                 {renderSidebarContent()}
             </div>
         </div>
-
-
     );
 };
 

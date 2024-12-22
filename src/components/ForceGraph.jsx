@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import axios from 'axios';
 import { fetchChargingStations, fetchVehicles, fetchExperiences } from '../services/api';
 
-const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick, onLinkClick }) => {
+const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick, onLinkClick, selectedDistance }) => {
   const svgRef = useRef();
   const [stations, setStations] = useState([]);
   const [vehicles, setVehicles] = useState([]);
@@ -13,6 +13,23 @@ const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick, onLinkClick }) =
     width: window.innerWidth * 0.8, // 80% of the window width
     height: window.innerHeight * 0.8 // 80% of the window height
   });
+
+  function haversineDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+
+    const toRadians = (degrees) => degrees * (Math.PI / 180);
+
+    const dLat = toRadians(lat2 - lat1);
+    const dLon = toRadians(lon2 - lon1);
+
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // Distance in kilometers
+  }
 
   useEffect(() => {
     const loadData = async () => {
@@ -48,13 +65,30 @@ const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick, onLinkClick }) =
   useEffect(() => {
     const { width, height } = dimensions;
 
+    let filteredStations = stations;
+
+    if (selectedNode && selectedNode.type === 'vehicle') {
+      const selectedVehicle = selectedNode;
+      const maxDistance = 200; // Set your distance threshold, e.g., 200km
+
+      filteredStations = stations.filter(station => {
+        const distance = haversineDistance(
+          selectedVehicle.latitude,
+          selectedVehicle.longitude,
+          station.latitude,
+          station.longitude
+        );
+        return distance <= maxDistance; // Keep stations within the maxDistance
+      });
+    }
+
     const svg = d3.select(svgRef.current)
       .attr('width', width)
       .attr('height', height);
 
     // Combine stations and vehicles into a single nodes array
     const nodes = [
-      ...stations.map(station => ({
+      ...filteredStations.map(station => ({
         ...station,
         id: `station_${station.id}`,  // Prefix station IDs
         type: 'station', // Indicate it's a station node
@@ -75,24 +109,31 @@ const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick, onLinkClick }) =
     const links = [];
 
     vehicles.forEach(vehicle => {
-      stations.forEach(station => {
+      filteredStations.forEach(station => {
         if (vehicle.connectorType.toLowerCase() === station.connectorType.toLowerCase()) {
-          // Find the experience based on Vehicle and ChargingStation IDs
-          const experience = experiences.find(exp =>
+          // Find the experiences related to the vehicle and station
+          const relatedExperiences = experiences.filter(exp =>
             exp.vehicle.id === vehicle.id && exp.chargingStation.id === station.id
           );
 
-          // Determine link color based on feedback
-          let linkColor = '#999'; // Default link color (grey)
-          if (experience) {
-            linkColor = experience.feedback ? 'green' : 'red'; // Green for positive feedback, red for negative
+          // Count the number of positive and negative feedbacks
+          const positiveFeedbacks = relatedExperiences.filter(exp => exp.feedback === true).length;
+          const negativeFeedbacks = relatedExperiences.filter(exp => exp.feedback === false).length;
+
+          // Determine link color
+          let linkColor = '#999'; // Default to neutral gray if no feedback or positive and negative feedbacks are equal
+
+          if (positiveFeedbacks > negativeFeedbacks) {
+            linkColor = 'green'; // More positive feedbacks, use green
+          } else if (negativeFeedbacks > positiveFeedbacks) {
+            linkColor = 'red'; // More negative feedbacks, use red
           }
 
           // Add the link to the array with the correct color
           links.push({
             source: `vehicle_${vehicle.id}`,
             target: `station_${station.id}`,
-            color: linkColor, // Assign the color based on feedback
+            color: linkColor, // Assign the color based on feedback counts
           });
         }
       });

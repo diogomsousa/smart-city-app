@@ -24,7 +24,9 @@ export default function AddEntity() {
         voltageSupported: 85,
         energyDelivered: 120,
         connectorType: "",
-        paymentModel: ""
+        paymentModel: "",
+        longitude: 0,
+        latitude: 0
     });
 
     const updateChargingStation = (updatedChargingStation) => {
@@ -40,7 +42,8 @@ export default function AddEntity() {
         thermalSystem: "",
         connectorType: "",
         chargingBehavior: "",
-        plugCharge: false
+        longitude: 0,
+        latitude: 0
     });
 
     const updateVehicle = (updatedVehicle) => {
