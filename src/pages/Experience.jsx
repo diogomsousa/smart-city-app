@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ExperienceForm from '../components/forms/ExperienceForm';
 import axios from 'axios';
+import { fetchVehicles, fetchChargingStations, postExperience } from "../services/api";
 
 
 
@@ -25,23 +26,21 @@ export default function Experience() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const vehicleResponse = await axios.get("http://localhost:8888/vehicles");
-                setVehicles(vehicleResponse.data);
+                const vehicleData = await fetchVehicles();
+                setVehicles(vehicleData);
 
-                const stationResponse = await axios.get("http://localhost:8888/stations");
-                setChargingStations(stationResponse.data);
+                const stationData = await fetchChargingStations();
+                setChargingStations(stationData);
             } catch (error) {
-                console.error("Error fetching data: ", error);
+                throw new Error(`Error fetching data: ${error.message}`);
             }
         };
-
         fetchData();
     }, []);
 
     const updateExperience = (updatedExperience) => {
         setExperience(updatedExperience);
     };
-
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -53,12 +52,11 @@ export default function Experience() {
         };
 
         try {
-            await axios.post("http://localhost:8888/experience", dataToPost);
+            await postExperience(dataToPost);
             alert("Experience added successfully!");
             navigate("/");
         } catch (error) {
-            console.error("Error posting experience: ", error);
-            alert("There was an error submitting the experience.");
+            throw new Error(`Error posting experience: ${error.message}`);
         }
     };
 

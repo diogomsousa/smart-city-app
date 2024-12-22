@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import './ViewEntities.css';
 import { useNavigate } from 'react-router-dom';
-import { fetchChargingStations, fetchVehicles, fetchExperiences, deleteStation, deleteVehicle, deleteExperience } from '../services/api';
+import { fetchChargingStations, fetchVehicles, fetchBatteries, fetchSolarPanels, fetchExperiences, fetchRequests, deleteStation, deleteVehicle, deleteBattery, deleteSolarPanel, deleteExperience, deleteRequest } from '../services/api';
 
 export default function ViewEntities() {
     const [stations, setStations] = useState([]);
     const [vehicles, setVehicles] = useState([]);
+    const [batteries, setBatteries] = useState([]);
+    const [solarPanels, setSolarPanels] = useState([]);
     const [experiences, setExperiences] = useState([]);
+    const [requests, setRequests] = useState([]);
+
     const [selectedTable, setSelectedTable] = useState('stations'); // state to control which table to show
     const navigate = useNavigate();
 
@@ -27,9 +31,21 @@ export default function ViewEntities() {
                     data = await fetchVehicles();
                     setVehicles(data);
                     break;
+                case 'batteries':
+                    data = await fetchBatteries();
+                    setBatteries(data);
+                    break;
+                case 'solarPanels':
+                    data = await fetchSolarPanels();
+                    setSolarPanels(data);
+                    break;
                 case 'experiences':
                     data = await fetchExperiences();
                     setExperiences(data);
+                    break;
+                case 'requests':
+                    data = await fetchRequests();
+                    setRequests(data);
                     break;
                 default:
                     console.error(`Unknown type: ${type}`);
@@ -43,7 +59,10 @@ export default function ViewEntities() {
     useEffect(() => {
         loadData('stations');
         loadData('vehicles');
+        loadData('batteries');
+        loadData('solarPanels');
         loadData('experiences');
+        loadData('requests');
     }, []);
 
     const handleDelete = async (id, type) => {
@@ -57,9 +76,21 @@ export default function ViewEntities() {
                     await deleteVehicle(id);
                     setVehicles(vehicles.filter(vehicle => vehicle.id !== id));
                     break;
+                case 'battery':
+                    await deleteBattery(id);
+                    setBatteries(batteries.filter(battery => battery.id !== id));
+                    break;
+                case 'solarPanel':
+                    await deleteSolarPanel(id);
+                    setSolarPanels(solarPanels.filter(solarPanel => solarPanel.id !== id));
+                    break;
                 case 'experience':
                     await deleteExperience(id);
                     setExperiences(experiences.filter(experience => experience.id !== id));
+                    break;
+                case 'request':
+                    await deleteRequest(id);
+                    setRequests(requests.filter(request => request.id !== id));
                     break;
                 default:
                     console.error(`Unknown type: ${type}`);
@@ -93,9 +124,24 @@ export default function ViewEntities() {
                     Vehicles
                 </button>
                 <button
+                    onClick={() => setSelectedTable('batteries')}
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l mx-2">
+                    Batteries
+                </button>
+                <button
+                    onClick={() => setSelectedTable('solarPanels')}
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l mx-2">
+                    Solar Panels
+                </button>
+                <button
                     onClick={() => setSelectedTable('experiences')}
                     className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l mx-2">
                     Experiences
+                </button>
+                <button
+                    onClick={() => setSelectedTable('requests')}
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l mx-2">
+                    Requests
                 </button>
             </div>
 
@@ -196,6 +242,98 @@ export default function ViewEntities() {
                 </div>
             )}
 
+            {selectedTable === 'batteries' && (
+                <div className="container mx-auto table-vehicles">
+                    <table className="table-auto">
+                        <thead>
+                            <tr>
+                                <th className="px-4 py-2">#</th>
+                                <th className="px-4 py-2">Model Number</th>
+                                <th className="px-4 py-2">Storage Capacity</th>
+                                <th className="px-4 py-2">State Of Charge</th>
+                                <th className="px-4 py-2">Min Voltage</th>
+                                <th className="px-4 py-2">Status</th>
+                                <th className="px-4 py-2">X</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {batteries.length > 0 ? (
+                                batteries.map((battery, index) => (
+                                    <tr key={battery.id}>
+                                        <td className="border px-4 py-2">{index + 1}</td>
+                                        <td className="border px-4 py-2">{battery.modelNumber}</td>
+                                        <td className="border px-4 py-2">{battery.storageCapacity}</td>
+                                        <td className="border px-4 py-2">{battery.stateOfCharge}</td>
+                                        <td className="border px-4 py-2">{battery.minVoltage}</td>
+                                        <td className="border px-4 py-2">
+                                            {battery.status ? "Active" : "Inactive"}
+                                        </td>
+                                        <td className="border px-4 py-2">
+                                            <button
+                                                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l back-default-button"
+                                                onClick={() => handleDelete(battery.id, 'battery')}>
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="9" className="border px-4 py-2 text-center">No batteries available</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+            {selectedTable === 'solarPanels' && (
+                <div className="container mx-auto table-vehicles">
+                    <table className="table-auto">
+                        <thead>
+                            <tr>
+                                <th className="px-4 py-2">#</th>
+                                <th className="px-4 py-2">Model Number</th>
+                                <th className="px-4 py-2">Generation Capacity</th>
+                                <th className="px-4 py-2">Minimum Voltage</th>
+                                <th className="px-4 py-2">Maximum Voltage</th>
+                                <th className="px-4 py-2">Conversion Efficiency</th>
+                                <th className="px-4 py-2">Status</th>
+                                <th className="px-4 py-2">X</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {solarPanels.length > 0 ? (
+                                solarPanels.map((solarPanel, index) => (
+                                    <tr key={solarPanel.id}>
+                                        <td className="border px-4 py-2">{index + 1}</td>
+                                        <td className="border px-4 py-2">{solarPanel.modelNumber}</td>
+                                        <td className="border px-4 py-2">{solarPanel.generationCapacity}</td>
+                                        <td className="border px-4 py-2">{solarPanel.minVoltage}</td>
+                                        <td className="border px-4 py-2">{solarPanel.maxVoltage}</td>
+                                        <td className="border px-4 py-2">{solarPanel.conversionEfficiency}</td>
+                                        <td className="border px-4 py-2">
+                                            {solarPanel.status ? "Active" : "Inactive"}
+                                        </td>
+                                        <td className="border px-4 py-2">
+                                            <button
+                                                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l back-default-button"
+                                                onClick={() => handleDelete(solarPanel.id, 'solarPanel')}>
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="9" className="border px-4 py-2 text-center">No solar panels available</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
             {selectedTable === 'experiences' && (
                 <div className="container mx-auto table-vehicles">
                     <table className="table-auto">
@@ -232,6 +370,47 @@ export default function ViewEntities() {
                             ) : (
                                 <tr>
                                     <td colSpan="9" className="border px-4 py-2 text-center">No experiences available</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+            {selectedTable === 'requests' && (
+                <div className="container mx-auto table-vehicles">
+                    <table className="table-auto">
+                        <thead>
+                            <tr>
+                                <th className="px-4 py-2">#</th>
+                                <th className="px-4 py-2">Request Type</th>
+                                <th className="px-4 py-2">Distance</th>
+                                <th className="px-4 py-2">Battery</th>
+                                <th className="px-4 py-2">Vehicle</th>
+                                <th className="px-4 py-2">X</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {requests.length > 0 ? (
+                                requests.map((request, index) => (
+                                    <tr key={request.id}>
+                                        <td className="border px-4 py-2">{index + 1}</td>
+                                        <td className="border px-4 py-2">{request.requestType}</td>
+                                        <td className="border px-4 py-2">{request.distance}</td>
+                                        <td className="border px-4 py-2">{request.vehicle.brand + request.vehicle.model}</td>
+                                        <td className="border px-4 py-2">{request.battery.modelNumber}</td>
+                                        <td className="border px-4 py-2">
+                                            <button
+                                                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l back-default-button"
+                                                onClick={() => handleDelete(request.id, 'request')}>
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="9" className="border px-4 py-2 text-center">No requests available</td>
                                 </tr>
                             )}
                         </tbody>

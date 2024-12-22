@@ -1,9 +1,11 @@
 .filters-section {
     display: flex;
     justify-content: center;
+    align-items: center;
     width: 100%;
-    margin-bottom: 40px;
-    /* Reduce space below the filter section */
+    margin-bottom: 20px;
+    padding: 10px 0;
+    background-color: #f9f9f9;
 }
 
 .form-section {
@@ -50,6 +52,30 @@
 .add-entity-filters label {
     font-size: 14px;
     font-weight: 500;
+}
+
+.add-entity-filters-container {
+    display: flex;
+    justify-content: center;
+    width: 80%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+
+.add-entity-filters-container .flex {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 20px;
+    width: auto;
+}
+
+.add-entity-filters-container .flex div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
 }
 
 .form-container {
