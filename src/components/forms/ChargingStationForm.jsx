@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 export default function ChargingStationForm({ chargingStation, updateChargingStation }) {
 
-  const { locationType, zipCode, city, chargingStandard, voltageSupported, energyDelivered, connectorType, paymentModel, longitude, latitude } = chargingStation;
+  const { locationType, zipCode, city, chargingStandard, voltageSupported, energyDelivered, minPowerRange, maxPowerRange, connectorType, paymentModel, longitude, latitude } = chargingStation;
 
   const handleChangeChargingStation = (e) => {
     const { name, value } = e.target;
@@ -79,6 +79,28 @@ export default function ChargingStationForm({ chargingStation, updateChargingSta
           name='energyDelivered'
           onChange={handleChangeChargingStation}
           value={energyDelivered} />
+      </div>
+      <div className="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="minPowerRange">
+          Min Power Range (W)
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          type="text"
+          placeholder="Min Power Range"
+          name='minPowerRange'
+          onChange={handleChangeChargingStation}
+          value={minPowerRange} />
+      </div>
+      <div className="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="maxPowerRange">
+          Max Power Range (W)
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          type="text"
+          placeholder=" Max Power Range"
+          name='maxPowerRange'
+          onChange={handleChangeChargingStation}
+          value={maxPowerRange} />
       </div>
       <div className="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="connectorType">

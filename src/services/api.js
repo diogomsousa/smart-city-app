@@ -160,7 +160,9 @@ export const fetchRequests = async () => {
 
 export const postRequest = async (request) => {
     try {
+        console.log("Posting request:", request);
         const response = await axios.post(`${API_URL}/request`, request);
+        console.log("Response:", response);
         return response.data;
     } catch (error) {
         throw new Error(`Error posting request: ${error.message}`);

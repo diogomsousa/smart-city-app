@@ -1,14 +1,32 @@
 import React from 'react';
 import './Modal.css'; // Your CSS for styling
 import RequestForm from './forms/RequestForm'; // Import the RequestForm
+import { postRequest } from '../services/api';
 
-const Modal = ({ isOpen, closeModal, onSubmit, request, vehicles, updateRequest }) => {
+const Modal = ({ isOpen, closeModal, onSubmit, vehicles, batteries, request, updateRequest }) => {
     if (!isOpen) return null; // Don't render modal if it's not open
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        onSubmit(); // Call the provided submit handler
-        closeModal(); // Close the modal after submit
+
+        const requestToPost = {
+            vehicle: request.vehicle ? { id: request.vehicle } : null, // Wrap in object if present
+            battery: request.battery ? { id: request.battery } : null,
+            distance: request.distance || 0, // Ensure distance is always provided
+            requestType: request.requestType || "", // Default to empty string if undefined
+        };
+
+        console.log("Payload being sent:", requestToPost);
+
+        try {
+            await postRequest(requestToPost);
+        } catch (error) {
+            console.error("Error submitting request:", error);
+            alert("There was an error submitting the request. Please try again.");
+        }
+
+        onSubmit();
+        closeModal();
     };
 
     return (
@@ -17,8 +35,9 @@ const Modal = ({ isOpen, closeModal, onSubmit, request, vehicles, updateRequest 
                 <form onSubmit={handleSubmit}>
                     {/* Request Form Content */}
                     <RequestForm
-                        request={request}
                         vehicles={vehicles}
+                        batteries={batteries}
+                        request={request}
                         updateRequest={updateRequest}
                     />
 

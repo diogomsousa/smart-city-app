@@ -252,6 +252,9 @@ export default function ViewEntities() {
                                 <th className="px-4 py-2">Storage Capacity</th>
                                 <th className="px-4 py-2">State Of Charge</th>
                                 <th className="px-4 py-2">Min Voltage</th>
+                                <th className="px-4 py-2">Max Voltage</th>
+                                <th className="px-4 py-2">Min Power Range</th>
+                                <th className="px-4 py-2">Max Power Range</th>
                                 <th className="px-4 py-2">Status</th>
                                 <th className="px-4 py-2">X</th>
                             </tr>
@@ -265,6 +268,9 @@ export default function ViewEntities() {
                                         <td className="border px-4 py-2">{battery.storageCapacity}</td>
                                         <td className="border px-4 py-2">{battery.stateOfCharge}</td>
                                         <td className="border px-4 py-2">{battery.minVoltage}</td>
+                                        <td className="border px-4 py-2">{battery.maxVoltage}</td>
+                                        <td className="border px-4 py-2">{battery.minPowerRange}</td>
+                                        <td className="border px-4 py-2">{battery.maxPowerRange}</td>
                                         <td className="border px-4 py-2">
                                             {battery.status ? "Active" : "Inactive"}
                                         </td>
@@ -397,8 +403,12 @@ export default function ViewEntities() {
                                         <td className="border px-4 py-2">{index + 1}</td>
                                         <td className="border px-4 py-2">{request.requestType}</td>
                                         <td className="border px-4 py-2">{request.distance}</td>
-                                        <td className="border px-4 py-2">{request.vehicle.brand + request.vehicle.model}</td>
-                                        <td className="border px-4 py-2">{request.battery.modelNumber}</td>
+                                        <td className="border px-4 py-2">
+                                            {request.battery ? request.battery.modelNumber : 'N/A'}
+                                        </td>
+                                        <td className="border px-4 py-2">
+                                            {request.vehicle ? request.vehicle.brand : 'N/A'}
+                                        </td>
                                         <td className="border px-4 py-2">
                                             <button
                                                 className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l back-default-button"
@@ -414,6 +424,7 @@ export default function ViewEntities() {
                                 </tr>
                             )}
                         </tbody>
+
                     </table>
                 </div>
             )}

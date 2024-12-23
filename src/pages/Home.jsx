@@ -7,7 +7,7 @@ import { Route, Routes } from 'react-router-dom';
 import './Home.css';
 import Experience from "./Experience";
 import Modal from "../components/Modal";
-import { fetchVehicles, fetchChargingStations, fetchExperiences } from "../services/api";
+import { fetchVehicles, fetchChargingStations, fetchBatteries, fetchSolarPanels, fetchExperiences, fetchRequests } from "../services/api";
 import RequestForm from "../components/forms/RequestForm";
 import ViewEntities from "./ViewEntities";
 import LinkSidebar from "../components/LinkSidebar";
@@ -21,8 +21,9 @@ const Home = () => {
     });
     const [isModalOpen, setIsModalOpen] = useState(false); // Modal open state
     const [request, setRequest] = useState({
-        vehicle: '',
-        chargeMode: true,
+        requestType: 'vehicle',
+        vehicle: null,
+        battery: null,
         distance: 50,
     });
 
@@ -33,8 +34,11 @@ const Home = () => {
     const [selectedDistance, setSelectedDistance] = useState('');
 
     const [vehicles, setVehicles] = useState([]);
+    const [batteries, setBatteries] = useState([]);
+    const [solarPanels, setSolarPanels] = useState([]);
     const [chargingStations, setChargingStations] = useState([]);
     const [experiences, setExperiences] = useState([]);
+    const [requests, setRequests] = useState([]);
     const [showSidebar, setShowSidebar] = useState(true); // Controls the visibility of the sidebar
 
     const navigate = useNavigate();
@@ -44,15 +48,23 @@ const Home = () => {
         const fetchData = async () => {
             try {
                 const vehicleData = await fetchVehicles(); // Fetch vehicles
-                console.log('Fetched vehicles:', vehicleData); // Log fetched vehicles
                 setVehicles(vehicleData);
 
                 const stationData = await fetchChargingStations(); // Fetch charging stations
                 setChargingStations(stationData);
 
+                const batteriesData = await fetchBatteries();
+                setBatteries(batteriesData);
+
+                const solarPanels = await fetchSolarPanels();
+                setSolarPanels(solarPanels);
+
                 const experienceData = await fetchExperiences();
-                console.log('Fetched experiences:', experienceData);
                 setExperiences(experienceData);
+
+                const requestData = await fetchRequests();
+                setRequests(requestData);
+
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -136,6 +148,8 @@ const Home = () => {
         setChargeMode(request.chargeMode);
         setSelectedVehicle(request.vehicle);
         setSelectedDistance(request.distance);
+
+        setRequests((prevRequests) => [...prevRequests, request]);
     };
 
     const filteredStations = chargingStations.filter(station => {
@@ -218,6 +232,24 @@ const Home = () => {
                         </div>
                     </div>
                 </div>
+                {/* Requests Section */}
+                <div className="requests-section">
+                    <h3 className="text-lg font-bold mb-4">Requests</h3>
+                    <div className="requests-cards">
+                        {requests.map((req, index) => (
+                            <div key={index} className="request-card bg-gray-200 p-4 mb-2 rounded">
+                                <p className="text-sm font-medium text-gray-800">Type: {req.requestType}</p>
+                                {req.vehicle && (
+                                    <p className="text-sm text-gray-600">Vehicle: {req.vehicle.brand} {req.vehicle.model}</p>
+                                )}
+                                {req.battery && (
+                                    <p className="text-sm text-gray-600">Battery: {req.battery.modelNumber}</p>
+                                )}
+                                <p className="text-sm text-gray-600">Distance: {req.distance} km</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
 
             <div className="graph-container">
@@ -245,6 +277,7 @@ const Home = () => {
                 isOpen={isModalOpen}
                 closeModal={closeModal}
                 request={request}
+                batteries={batteries}
                 vehicles={vehicles}
                 onSubmit={handleSubmit}
                 updateRequest={updateRequest}
@@ -252,6 +285,7 @@ const Home = () => {
                 <RequestForm
                     request={request}
                     vehicles={vehicles}
+                    batteries={batteries}
                     updateRequest={updateRequest}
                 />
             </Modal>

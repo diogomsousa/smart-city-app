@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import axios from 'axios';
-import { fetchChargingStations, fetchVehicles, fetchExperiences } from '../services/api';
+import { fetchChargingStations, fetchVehicles, fetchBatteries, fetchSolarPanels, fetchExperiences } from '../services/api';
 
-const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick, onLinkClick, selectedDistance }) => {
+const ForceGraph = ({ zoomLevel, request, selectedFeedback, onNodeClick, onLinkClick }) => {
   const svgRef = useRef();
+
   const [stations, setStations] = useState([]);
   const [vehicles, setVehicles] = useState([]);
+  const [batteries, setBatteries] = useState([]);
+  const [solarPanels, setSolarPanels] = useState([]);
   const [experiences, setExperiences] = useState([]);
   const [selectedNode, setSelectedNode] = useState(null);
   const [dimensions, setDimensions] = useState({
@@ -34,22 +37,25 @@ const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick, onLinkClick, sel
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [stationData, vehicleData, experienceData] = await Promise.all([
+        const [stationData, vehicleData, batteryData, solarPanelData, experienceData] = await Promise.all([
           fetchChargingStations(),
           fetchVehicles(),
+          fetchBatteries(),
+          fetchSolarPanels(),
           fetchExperiences(),
         ]);
         setStations(stationData);
         setVehicles(vehicleData);
+        setBatteries(batteryData);
+        setSolarPanels(solarPanelData);
         setExperiences(experienceData);
       } catch (error) {
-        console.error('Error loading data', error);
+        throw new Error(`Error loading data ${error.message}`);
       }
     };
     loadData();
   }, []);
 
-  // Update dimensions on window resize
   useEffect(() => {
     const handleResize = () => {
       setDimensions({
@@ -65,43 +71,40 @@ const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick, onLinkClick, sel
   useEffect(() => {
     const { width, height } = dimensions;
 
-    let filteredStations = stations;
-
-    if (selectedNode && selectedNode.type === 'vehicle') {
-      const selectedVehicle = selectedNode;
-      const maxDistance = 200; // Set your distance threshold, e.g., 200km
-
-      filteredStations = stations.filter(station => {
-        const distance = haversineDistance(
-          selectedVehicle.latitude,
-          selectedVehicle.longitude,
-          station.latitude,
-          station.longitude
-        );
-        return distance <= maxDistance; // Keep stations within the maxDistance
-      });
-    }
-
     const svg = d3.select(svgRef.current)
       .attr('width', width)
       .attr('height', height);
 
     // Combine stations and vehicles into a single nodes array
     const nodes = [
-      ...filteredStations.map(station => ({
+      ...stations.map(station => ({
         ...station,
-        id: `station_${station.id}`,  // Prefix station IDs
-        type: 'station', // Indicate it's a station node
-        color: 'red', // Color for stations
+        id: `station_${station.id}`,
+        type: 'station',
+        color: 'red',
         label: `${station.locationType} (${station.zipCode})`,
-        originalRadius: 10,  // Base radius for stations
+        originalRadius: 10,
       })),
       ...vehicles.map(vehicle => ({
         ...vehicle,
-        id: `vehicle_${vehicle.id}`,  // Prefix vehicle IDs
-        type: 'vehicle', // Indicate it's a vehicle node
-        color: 'blue', // Color for vehicles
+        id: `vehicle_${vehicle.id}`,
+        type: 'vehicle',
+        color: 'blue',
         label: `${vehicle.brand} ${vehicle.model}`
+      })),
+      ...batteries.map(battery => ({
+        ...battery,
+        id: `battery_${battery.id}`,
+        type: 'battery',
+        color: 'green',
+        label: `${battery.modelNumber}`
+      })),
+      ...solarPanels.map(solarPanel => ({
+        ...solarPanel,
+        id: `solarPanel_${solarPanel.id}`,
+        type: 'solarPanel',
+        color: 'orange',
+        label: `${solarPanel.modelNumber}`
       })),
     ];
 
@@ -109,7 +112,17 @@ const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick, onLinkClick, sel
     const links = [];
 
     vehicles.forEach(vehicle => {
-      filteredStations.forEach(station => {
+      stations.forEach(station => {
+
+        let linkColor = '#999';
+
+        if (request.vehicle != null) {
+          let dist = haversineDistance(request.vehicle.latitude, request.vehicle.longitude, station.latitude, station.longitude)
+          if (dist <= request.distance) {
+
+          }
+        }
+
         if (vehicle.connectorType.toLowerCase() === station.connectorType.toLowerCase()) {
           // Find the experiences related to the vehicle and station
           const relatedExperiences = experiences.filter(exp =>
@@ -121,7 +134,7 @@ const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick, onLinkClick, sel
           const negativeFeedbacks = relatedExperiences.filter(exp => exp.feedback === false).length;
 
           // Determine link color
-          let linkColor = '#999'; // Default to neutral gray if no feedback or positive and negative feedbacks are equal
+          // Default to neutral gray if no feedback or positive and negative feedbacks are equal
 
           if (positiveFeedbacks > negativeFeedbacks) {
             linkColor = 'green'; // More positive feedbacks, use green
@@ -136,8 +149,36 @@ const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick, onLinkClick, sel
             color: linkColor, // Assign the color based on feedback counts
           });
         }
+
+
+
+        batteries.forEach(battery => {
+          if (station.minPowerRange >= battery.minPowerRange && station.maxPowerRange <= battery.maxPowerRange) {
+            let linkColor = '#999';
+            links.push({
+              source: `station_${station.id}`,
+              target: `battery_${battery.id}`,
+              color: linkColor,
+            })
+          }
+
+          solarPanels.forEach(solarPanel => {
+            if (battery.minVoltage >= solarPanel.minVoltage && battery.maxVoltage <= solarPanel.maxVoltage) {
+              let linkColor = '#999';
+              links.push({
+                source: `battery_${battery.id}`,
+                target: `solarPanel_${solarPanel.id}`,
+                color: linkColor,
+              })
+            }
+          })
+        })
       });
     });
+
+
+
+
 
     // Apply the feedback filter
     const filteredLinks = links.filter(link => {

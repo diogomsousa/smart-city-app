@@ -1,7 +1,7 @@
 import React from 'react'
 
 export default function BatteryForm({ battery, updateBattery }) {
-    const { modelNumber, storageCapacity, stateOfCharge, minVoltage, status, longitude, latitude } = battery;
+    const { modelNumber, storageCapacity, stateOfCharge, minVoltage, maxVoltage, minPowerRange, maxPowerRange, status, longitude, latitude } = battery;
 
     const handleChangeBattery = (e) => {
         const { name, value } = e.target;
@@ -59,6 +59,42 @@ export default function BatteryForm({ battery, updateBattery }) {
                     name="minVoltage"
                     onChange={handleChangeBattery}
                     value={minVoltage}
+                />
+            </div>
+            <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="maxVoltage">
+                    Max Voltage Supported (V)
+                </label>
+                <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    type="text"
+                    placeholder="Max Voltage"
+                    name="maxVoltage"
+                    onChange={handleChangeBattery}
+                    value={maxVoltage}
+                />
+            </div>
+            <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="minPowerRange">
+                    Min Power Range (W)
+                </label>
+                <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    type="text"
+                    placeholder="Min Power Range"
+                    name="minPowerRange"
+                    onChange={handleChangeBattery}
+                    value={minPowerRange}
+                />
+            </div>
+            <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="maxPowerRange">
+                    Max Power Range (W)
+                </label>
+                <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    type="text"
+                    placeholder="Max Voltage"
+                    name="maxPowerRange"
+                    onChange={handleChangeBattery}
+                    value={maxPowerRange}
                 />
             </div>
             <div className="mb-4">

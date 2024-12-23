@@ -21,6 +21,8 @@ export default function AddEntity() {
         chargingStandard: "",
         voltageSupported: 85,
         energyDelivered: 120,
+        minPowerRange: 500,
+        maxPowerRange: 700,
         connectorType: "",
         paymentModel: "",
         longitude: 0,
@@ -55,6 +57,9 @@ export default function AddEntity() {
         storageCapacity: 100,
         stateOfCharge: 40,
         minVoltage: 40,
+        maxVoltage: 60,
+        minPowerRange: 500,
+        maxPowerRange: 1500,
         status: true,
         longitude: 0,
         latitude: 0
@@ -71,11 +76,15 @@ export default function AddEntity() {
             case 'vehicle':
                 return vehicle.brand && vehicle.model && vehicle.portLocation && vehicle.connectorType && vehicle.thermalSystem && vehicle.chargingBehavior;
             case 'chargingStation':
-                return chargingStation.locationType && chargingStation.zipCode && chargingStation.city && chargingStation.chargingStandard && chargingStation.voltageSupported && chargingStation.energyDelivered && chargingStation.connectorType && chargingStation.paymentModel && chargingStation.longitude && chargingStation.latitude;
+                return chargingStation.locationType && chargingStation.zipCode && chargingStation.city && chargingStation.chargingStandard && chargingStation.voltageSupported
+                    && chargingStation.energyDelivered && chargingStation.minPowerRange && chargingStation.maxPowerRange && chargingStation.connectorType && chargingStation.paymentModel
+                    && chargingStation.longitude && chargingStation.latitude;
             case 'battery':
-                return battery.modelNumber && battery.storageCapacity && battery.stateOfCharge && battery.minVoltage && battery.status && battery.longitude && battery.latitude;
+                return battery.modelNumber && battery.storageCapacity && battery.stateOfCharge && battery.minVoltage && battery.maxVoltage && battery.minPowerRange && battery.maxPowerRange
+                    && battery.status && battery.longitude && battery.latitude;
             case 'solarPanel':
-                return solarPanel.modelNumber && solarPanel.generationCapacity && solarPanel.minVoltage && solarPanel.maxVoltage && solarPanel.conversionEfficiency && solarPanel.status && solarPanel.longitude && solarPanel.latitude;
+                return solarPanel.modelNumber && solarPanel.generationCapacity && solarPanel.minVoltage && solarPanel.maxVoltage && solarPanel.conversionEfficiency && solarPanel.status
+                    && solarPanel.longitude && solarPanel.latitude;
             default:
                 return false;
         }
