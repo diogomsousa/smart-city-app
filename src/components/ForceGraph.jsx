@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import axios from 'axios';
 import { fetchChargingStations, fetchVehicles, fetchBatteries, fetchSolarPanels, fetchExperiences } from '../services/api';
 
-const ForceGraph = ({ zoomLevel, request, selectedFeedback, onNodeClick, onLinkClick }) => {
+const ForceGraph = ({ zoomLevel, selectedFeedback, onNodeClick, onLinkClick }) => {
   const svgRef = useRef();
 
   const [stations, setStations] = useState([]);
@@ -16,6 +16,7 @@ const ForceGraph = ({ zoomLevel, request, selectedFeedback, onNodeClick, onLinkC
     width: window.innerWidth * 0.8, // 80% of the window width
     height: window.innerHeight * 0.8 // 80% of the window height
   });
+
 
   function haversineDistance(lat1, lon1, lat2, lon2) {
     const R = 6371;
@@ -75,8 +76,45 @@ const ForceGraph = ({ zoomLevel, request, selectedFeedback, onNodeClick, onLinkC
       .attr('width', width)
       .attr('height', height);
 
-    // Combine stations and vehicles into a single nodes array
-    const nodes = [
+    let nodes = [];
+
+    let filteredStations = [];
+
+    // if (request.vehicle != null) {
+    //   filteredStations = stations.filter(station => {
+    //     const dist = haversineDistance(
+    //       parseFloat(request.vehicle.latitude),
+    //       parseFloat(request.vehicle.longitude),
+    //       parseFloat(station.latitude),
+    //       parseFloat(station.longitude)
+    //     );
+
+    //     console.log(`Station ID: ${station.id}, Distance: ${dist} km`);
+    //     return dist <= request.distance;
+    //   });
+
+
+    //   // Definir os nós (nodes) apenas para veículos e estações filtradas
+    //   nodes = [
+    //     ...filteredStations.map(station => ({
+    //       ...station,
+    //       id: `station_${station.id}`,
+    //       type: 'station',
+    //       color: 'red',
+    //       label: `${station.locationType} (${station.zipCode})`,
+    //       originalRadius: 10,
+    //     })),
+    //     ...vehicles.map(vehicle => ({
+    //       ...vehicle,
+    //       id: `vehicle_${vehicle.id}`,
+    //       type: 'vehicle',
+    //       color: 'blue',
+    //       label: `${vehicle.brand} ${vehicle.model}`
+    //     }))
+    //   ];
+    // } else {
+    // Se request.vehicle for null, incluir todos os nós (stations, vehicles, batteries e solarPanels)
+    nodes = [
       ...stations.map(station => ({
         ...station,
         id: `station_${station.id}`,
@@ -107,74 +145,99 @@ const ForceGraph = ({ zoomLevel, request, selectedFeedback, onNodeClick, onLinkC
         label: `${solarPanel.modelNumber}`
       })),
     ];
+    // }
 
-    // Create links based on connector type matching and Experience feedback
-    const links = [];
+    let links = [];
+    let linkColor = '#999';
 
+    // if (request.vehicle != null) {
+    //   vehicles.forEach(vehicle => {
+    //     filteredStations.forEach(station => {
+
+    //       if (vehicle.connectorType.toLowerCase() === station.connectorType.toLowerCase()) {
+    //         // Encontrar as experiências relacionadas ao veículo e estação
+    //         const relatedExperiences = experiences.filter(exp =>
+    //           exp.vehicle.id === vehicle.id && exp.chargingStation.id === station.id
+    //         );
+
+    //         // Contagem de feedbacks positivos e negativos
+    //         const positiveFeedbacks = relatedExperiences.filter(exp => exp.feedback === true).length;
+    //         const negativeFeedbacks = relatedExperiences.filter(exp => exp.feedback === false).length;
+
+    //         // Determinação da cor da ligação
+    //         if (positiveFeedbacks > negativeFeedbacks) {
+    //           linkColor = 'green'; // Mais feedbacks positivos, cor verde
+    //         } else if (negativeFeedbacks > positiveFeedbacks) {
+    //           linkColor = 'red'; // Mais feedbacks negativos, cor vermelha
+    //         }
+
+    //         // Adiciona a ligação ao array com a cor correta
+    //         links.push({
+    //           source: `vehicle_${vehicle.id}`,
+    //           target: `station_${station.id}`,
+    //           color: linkColor, // Cor da ligação com base nos feedbacks
+    //         });
+    //       }
+    //     });
+    //   });
+    // } else {
+    // Se request.vehicle for null, criamos as ligações para todos os nós
     vehicles.forEach(vehicle => {
       stations.forEach(station => {
 
-        let linkColor = '#999';
-
-        if (request.vehicle != null) {
-          let dist = haversineDistance(request.vehicle.latitude, request.vehicle.longitude, station.latitude, station.longitude)
-          if (dist <= request.distance) {
-
-          }
-        }
-
         if (vehicle.connectorType.toLowerCase() === station.connectorType.toLowerCase()) {
-          // Find the experiences related to the vehicle and station
+          // Encontrar as experiências relacionadas ao veículo e estação
           const relatedExperiences = experiences.filter(exp =>
             exp.vehicle.id === vehicle.id && exp.chargingStation.id === station.id
           );
 
-          // Count the number of positive and negative feedbacks
+          // Contagem de feedbacks positivos e negativos
           const positiveFeedbacks = relatedExperiences.filter(exp => exp.feedback === true).length;
           const negativeFeedbacks = relatedExperiences.filter(exp => exp.feedback === false).length;
 
-          // Determine link color
-          // Default to neutral gray if no feedback or positive and negative feedbacks are equal
-
+          // Determinação da cor da ligação
           if (positiveFeedbacks > negativeFeedbacks) {
-            linkColor = 'green'; // More positive feedbacks, use green
+            linkColor = 'green'; // Mais feedbacks positivos, cor verde
           } else if (negativeFeedbacks > positiveFeedbacks) {
-            linkColor = 'red'; // More negative feedbacks, use red
+            linkColor = 'red'; // Mais feedbacks negativos, cor vermelha
           }
 
-          // Add the link to the array with the correct color
+          // Adiciona a ligação ao array com a cor correta
           links.push({
             source: `vehicle_${vehicle.id}`,
             target: `station_${station.id}`,
-            color: linkColor, // Assign the color based on feedback counts
+            color: linkColor, // Cor da ligação com base nos feedbacks
           });
         }
+      }
+      );
 
-
-
-        batteries.forEach(battery => {
+      // Ligações para baterias e painéis solares
+      batteries.forEach(battery => {
+        stations.forEach(station => {
           if (station.minPowerRange >= battery.minPowerRange && station.maxPowerRange <= battery.maxPowerRange) {
             let linkColor = '#999';
             links.push({
               source: `station_${station.id}`,
               target: `battery_${battery.id}`,
               color: linkColor,
-            })
-          }
+            });
 
-          solarPanels.forEach(solarPanel => {
-            if (battery.minVoltage >= solarPanel.minVoltage && battery.maxVoltage <= solarPanel.maxVoltage) {
-              let linkColor = '#999';
-              links.push({
-                source: `battery_${battery.id}`,
-                target: `solarPanel_${solarPanel.id}`,
-                color: linkColor,
-              })
-            }
-          })
-        })
+            solarPanels.forEach(solarPanel => {
+              if (battery.minVoltage >= solarPanel.minVoltage && battery.maxVoltage <= solarPanel.maxVoltage) {
+                let linkColor = '#999';
+                links.push({
+                  source: `battery_${battery.id}`,
+                  target: `solarPanel_${solarPanel.id}`,
+                  color: linkColor,
+                });
+              }
+            });
+          }
+        });
       });
     });
+    // }
 
 
 

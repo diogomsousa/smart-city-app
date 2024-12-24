@@ -1,5 +1,5 @@
 /* Modal.css */
-.modal-overlay {
+.requestModal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -12,7 +12,7 @@
     z-index: 1000;
 }
 
-.modal-content {
+.requestModal-content {
     background-color: white;
     padding: 20px;
     border-radius: 8px;
@@ -20,7 +20,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.modal-buttons {
+.requestModal-buttons {
     display: flex;
     justify-content: flex-end;
     /* Align the buttons to the right */
@@ -30,7 +30,7 @@
     /* Add space between form content and buttons */
 }
 
-.cancel-modal {
+.cancel-requestModal {
     background: none;
     border: 1px solid #ccc;
     color: #007BFF;
@@ -39,11 +39,11 @@
     cursor: pointer;
 }
 
-.cancel-modal:hover {
+.cancel-requestModal:hover {
     background-color: #f1f1f1;
 }
 
-.submit-modal {
+.submit-requestModal {
     background-color: #4CAF50;
     color: white;
     padding: 8px 16px;
@@ -52,6 +52,6 @@
     cursor: pointer;
 }
 
-.submit-modal:hover {
+.submit-requestModal:hover {
     background-color: #45a049;
 }

@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from "react";
-import ForceGraph from "../components/ForceGraph";
-import "../App.css"; // Import your CSS
-import { useNavigate } from 'react-router-dom';
-import AddEntity from "./AddEntity";
-import { Route, Routes } from 'react-router-dom';
+import "../App.css";
 import './Home.css';
+import { useNavigate, Route, Routes } from 'react-router-dom';
+import AddEntity from "./AddEntity";
 import Experience from "./Experience";
-import Modal from "../components/Modal";
-import { fetchVehicles, fetchChargingStations, fetchBatteries, fetchSolarPanels, fetchExperiences, fetchRequests } from "../services/api";
-import RequestForm from "../components/forms/RequestForm";
 import ViewEntities from "./ViewEntities";
 import LinkSidebar from "../components/LinkSidebar";
+import RequestModal from "../components/RequestModal";
+import ForceGraph from "../components/ForceGraph";
+import { fetchVehicles, fetchChargingStations, fetchBatteries, fetchSolarPanels, fetchExperiences, fetchRequests } from "../services/api";
 
 const Home = () => {
     const [selectedNode, setSelectedNode] = useState(null);  // Track selected node
@@ -19,17 +17,9 @@ const Home = () => {
         positive: false,
         negative: false,
     });
-    const [isModalOpen, setIsModalOpen] = useState(false); // Modal open state
-    const [request, setRequest] = useState({
-        requestType: 'vehicle',
-        vehicle: null,
-        battery: null,
-        distance: 50,
-    });
+    const [isRequestModalOpen, setIsRequestModalOpen] = useState(false); // Modal open state
+    const [requests, setRequests] = useState([]);
 
-    const [chargeMode, setChargeMode] = useState(true);
-    const [selectedVehicleType, setSelectedVehicleType] = useState(true);
-    const [selectedVehicleModel, setSelectedVehicleModel] = useState(true);
     const [selectedVehicle, setSelectedVehicle] = useState('');
     const [selectedDistance, setSelectedDistance] = useState('');
 
@@ -38,7 +28,6 @@ const Home = () => {
     const [solarPanels, setSolarPanels] = useState([]);
     const [chargingStations, setChargingStations] = useState([]);
     const [experiences, setExperiences] = useState([]);
-    const [requests, setRequests] = useState([]);
     const [showSidebar, setShowSidebar] = useState(true); // Controls the visibility of the sidebar
 
     const navigate = useNavigate();
@@ -72,10 +61,6 @@ const Home = () => {
 
         fetchData();
     }, []);
-
-    const updateRequest = (updatedRequest) => {
-        setRequest(updatedRequest);
-    };
 
     const handleFeedbackChange = (event) => {
         const { value, checked } = event.target;
@@ -113,52 +98,26 @@ const Home = () => {
             (exp) => exp.vehicle.id === numVehicle && exp.chargingStation.id === numStation
         );
 
-        console.log("Related Experiences:", relatedExperiences); // Log to verify the filtered experiences
+        console.log("Related Experiences:", relatedExperiences);
 
-        // Set the selectedLink with vehicle, station, and related experiences
+
         setSelectedLink({ vehicle, station, experiences: relatedExperiences });
-        setShowSidebar(true); // Ensure the sidebar is shown when a new link is clicked
+        setShowSidebar(true);
     };
 
-    const handleAddEntityClick = () => {
-        navigate('/add-entity');
+    const handleAddEntityClick = () => navigate('/add-entity');
+    const handleViewEntitiesClick = () => navigate('/view-entities');;
+    const handleExperienceClick = () => navigate('/experience');
+    const handleRequestClick = () => setIsRequestModalOpen(true);
+    const closeRequestModal = () => setIsRequestModalOpen(false);
+
+
+
+    const handleSubmit = (newRequest) => {
+        setRequests((prevRequests) => [...prevRequests, newRequest]);
+        console.log("New Request: ", newRequest);
+        closeRequestModal();
     };
-
-    const handleViewEntitiesClick = () => {
-        navigate('/view-entities');
-    };
-
-    const handleExperienceClick = () => {
-        navigate('/experience');
-    };
-
-    const handleRequestClick = () => {
-        setIsModalOpen(true);
-    };
-
-    const closeModal = () => {
-        setIsModalOpen(false);
-    };
-
-
-    const handleSubmit = () => {
-        console.log('Form submitted with request:', request);
-        closeModal();
-
-        setChargeMode(request.chargeMode);
-        setSelectedVehicle(request.vehicle);
-        setSelectedDistance(request.distance);
-
-        setRequests((prevRequests) => [...prevRequests, request]);
-    };
-
-    const filteredStations = chargingStations.filter(station => {
-        if (chargeMode === true) {
-            return station.chargingStandard === "Fast Charging";
-        } else {
-            return station.chargingStandard === "Slow Charging";
-        }
-    });
 
     return (
         <div className="App">
@@ -257,12 +216,9 @@ const Home = () => {
                     selectedNode={selectedNode}
                     setSelectedNode={setSelectedNode}
                     selectedFeedback={selectedFeedback}
-                    chargeMode={chargeMode}
-                    request={request}
                     selectedVehicle={selectedVehicle}
                     setSelectedVehicle={setSelectedVehicle}
                     setSelectedDistance={setSelectedDistance}
-                    filteredStations={filteredStations}
                     onLinkClick={handleLinkClick}
                 />
             </div>
@@ -273,22 +229,12 @@ const Home = () => {
             )}
 
             {/* Modal Component */}
-            <Modal
-                isOpen={isModalOpen}
-                closeModal={closeModal}
-                request={request}
-                batteries={batteries}
+            <RequestModal
+                isOpen={isRequestModalOpen}
+                closeRequestModal={closeRequestModal}
                 vehicles={vehicles}
-                onSubmit={handleSubmit}
-                updateRequest={updateRequest}
-            >
-                <RequestForm
-                    request={request}
-                    vehicles={vehicles}
-                    batteries={batteries}
-                    updateRequest={updateRequest}
-                />
-            </Modal>
+                batteries={batteries}
+                onSubmit={handleSubmit} />
 
             <Routes>
                 <Route path="/add-entity" element={<AddEntity />} />

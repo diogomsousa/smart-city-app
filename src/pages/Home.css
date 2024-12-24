@@ -4,22 +4,16 @@
 
 .requests-section {
     margin-top: auto;
-    /* Push the requests section to the bottom */
     padding: 0.5rem;
 }
 
 .requests-cards {
     display: flex;
     flex-direction: column;
-    /* Stack items vertically */
     overflow-y: auto;
-    /* Enable vertical scrolling */
     overflow-x: hidden;
-    /* Disable horizontal scrolling */
     max-height: 300px;
-    /* Set maximum height to limit vertical space */
     padding-right: 8px;
-    /* Add some padding for scroll bar visibility */
 }
 
 
@@ -30,21 +24,15 @@
     margin-bottom: 8px;
     border-radius: 6px;
     transition: none;
-    /* Disable any hover transition effects */
 }
 
 .request-card:hover {
-    /* Optional: Keep the background consistent */
     transform: none;
-    /* Prevent scaling or size changes */
 }
 
 
 .request-card p {
     margin: 4px 0;
-    /* Slightly larger spacing between lines */
     font-size: 0.95rem;
-    /* Increase font size for better readability */
     line-height: 1.4;
-    /* Improve line spacing */
 }
